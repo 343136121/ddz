@@ -1,0 +1,16 @@
+{
+  "name": "ddz",
+  "type": "3d",
+  "uuid": "f836128e-88f2-4ca2-80c3-8b7df0f5b0b1",
+  "version": "3.4.0",
+  "creator": {
+    "version": "3.4.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "xhr": "2.6.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.178"
+  }
+}
