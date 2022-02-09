@@ -318,66 +318,110 @@ export class PokeUtil {
         return this.pokeNum;
     }
 
-    private flagSanX(count: number){
+    // 判断是否符合所有三张的牌型
+    private flagSanX(countSan: number){
         // 先排序，遇到2和王，均放到最末尾
-        var num = 3;
-        this.pokeSort = [];
-        var delArr = [];
-        var s=new Set();// 避免添加已有的牌
+        this.pokeArr.sort((a, b) => {
+            return b.sort - a.sort;
+        })
+        
+        // console.log("sanX",this.pokeArr)
 
-        // 记录所有符合3连的索引
-        for (var i = 0; i < this.pokeArr.length; i++) {
-            // 遇到2和王跳过
-            if([15,16,17].includes(this.pokeArr[i].num)){
-                continue;
-            }
-            var indexArr = [];
-            for (var j = i; j < this.pokeArr.length; j++) {
-                if (this.pokeArr[j].point == this.pokeArr[i].point) {
-                    indexArr.push(j)
+        var _arr =  [];
+        for(var i = 0;i<this.pokeArr.length;i++){
+            _arr.push(this.pokeArr[i].num)
+        }
+
+        var _res = []; //   
+        for (var i = 0; i < _arr.length;) {  
+            var count = 0;  
+            for (var j = i; j < _arr.length; j++) {  
+                if (_arr[i] == _arr[j]) {  
+                    count++;  
+                }  
+            }  
+            _res.push([_arr[i], count]);  
+            i += count;  
+        }  
+        // console.log(_arr,_res )
+
+        //找出所有三张的牌
+        var sanArr = _res.filter(function (x) {
+            return x[1]==3 && x[0] != 2;
+        });
+        sanArr.sort(function(a,b){
+            return -a[0]+b[0]
+        })
+
+        // 得到连续的三张
+        var targetArr = [];
+        for(var i =0;i<sanArr.length;i++){
+        targetArr.push(sanArr[i][0])
+        }
+        targetArr.sort()
+        var sanLianArr = this.arrange(targetArr)
+        for(var i=0;i<sanLianArr.length;i++){
+            sanLianArr[i].sort(function(a,b){
+                return b-a
+            })
+        }
+
+        console.log(countSan)
+        var sanLianArrOne = sanLianArr.find(function(x){
+            return x.length == countSan;
+        })
+
+        if(!sanLianArrOne){
+            return false;
+        }
+
+        console.log(sanLianArrOne)
+        
+
+        // 找出除了三张的牌
+        var aloneArr = _arr.filter(function (x) {
+            return !sanLianArrOne.includes(x);
+        });
+        
+        console.log(aloneArr)
+
+        // poke拆分
+        var pokeSan = this.pokeArr.filter(function (x) {
+            return sanLianArrOne.includes(x.num);
+        });
+        var pokeAlone = this.pokeArr.filter(function (x) {
+            return !sanLianArrOne.includes(x.num);
+        });
+        console.log(pokeSan,pokeAlone)
+        this.pokeArr = pokeSan.concat(pokeAlone)
+        return countSan;
+
+    }
+
+    arrange(source) {
+        var t;
+        var ta;
+        var r = [];
+
+        for(var j=0;j<source.length;j++){
+            var v=source[j];
+            if(v!=null){
+                //console.log(t, v);   // 跟踪调试用
+                if (t === v) {
+                    ta.push(t);
+                    t++;
+                    continue;
                 }
+
+                ta = [v];
+                t = v + 1;
+                r.push(ta);
             }
 
-            if (indexArr.length == num&& !s.has(this.pokeArr[i].point)) {
-                s.add(this.pokeArr[i].point);
-                delArr = delArr.concat(indexArr)
-            }
 
         }
 
-        for (var k = 0; k < delArr.length; k++) {
-            // push到手牌数组
-            this.pokeSort.push(this.pokeArr[delArr[k]])
-            // 删除相连的牌用0代替
-            this.pokeArr.splice(delArr[k], 1, 0);
-        }
-
-        // 删除为0的元素
-        this.pokeArr = this.pokeArr.filter(item => item != 0);
-        this.pokeArr = this.pokeSort.concat(this.pokeArr);
-
-        console.log("flagSanX",this.pokeArr)
-
-        var flag = 0;   // 连数
-        for(var i = 0;i<count*3;i=i+3){
-
-
-            if(this.pokeArr[i].num != this.pokeArr[i+1].num || this.pokeArr[i].num != this.pokeArr[i+2].num){
-                return false;
-            }
-
-            if(i<=(count-2)*3){
-                // 如果不是最后，判断是否比后面大1
-                if(Math.abs(this.pokeArr[i].num - this.pokeArr[i+3].num) > 1){
-                    return false;
-                }
-            }
-            
-
-            flag ++;
-        }
-
-        return flag;
+        return r;
     }
 
 
@@ -388,14 +432,10 @@ export class PokeUtil {
 
         var flag = this.flagSanX(this.pokeArr.length/3)
 
-        if(flag < 1 || flag > 6){
+        if(!flag){
             return false;
         }else{
-            if(flag == 1){
-                this.pokeNum.type = this.pokeType.San;
-            }else{
-                this.pokeNum.type = this.pokeType['San'+flag];
-            }
+            this.pokeNum.type = this.pokeType['San'+flag];
         }
 
         this.pokeNum.value = this.pokeArr[0].num;
@@ -410,15 +450,12 @@ export class PokeUtil {
         var count = this.pokeArr.length/4;
         var flag = this.flagSanX(count)
 
-        if(flag < 1 || flag > 5){
+        if(!flag){
             return false;
         }else{
-            if(flag == 1){
-                this.pokeNum.type = this.pokeType.SanDan;
-            }else{
-                this.pokeNum.type = this.pokeType['SanDan'+flag];
-            }
+            this.pokeNum.type = this.pokeType['SanDan'+flag];
         }
+
         this.pokeNum.value = this.pokeArr[0].num;
         return this.pokeNum;
     }
@@ -437,14 +474,10 @@ export class PokeUtil {
             }
         }
 
-        if(flag < 1 || flag > 4){
+        if(!flag){
             return false;
         }else{
-            if(flag == 1){
-                this.pokeNum.type = this.pokeType.SanDui;
-            }else{
-                this.pokeNum.type = this.pokeType['SanDui'+flag];
-            }
+            this.pokeNum.type = this.pokeType['SanDui'+flag];
         }
 
         this.pokeNum.value = this.pokeArr[0].num;
