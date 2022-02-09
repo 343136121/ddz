@@ -141,6 +141,8 @@ export class PokeUtil {
                 return false;
             }
 
+            // 牌型顺序需要调整
+
             if(this.isDan()){
                 return this.isDan()
             }else if(this.isDui()){
@@ -345,15 +347,15 @@ export class PokeUtil {
         }  
         // console.log(_arr,_res )
 
-        //找出所有三张的牌
+        //找出所有三张或四张的牌
         var sanArr = _res.filter(function (x) {
-            return x[1]==3 && x[0] != 15;
+            return x[1]>=3 && x[0] != 15;
         });
         sanArr.sort(function(a,b){
             return -a[0]+b[0]
         })
 
-        // 得到连续的三张
+        // 得到三张或四张牌的点数数组
         var targetArr = [];
         for(var i =0;i<sanArr.length;i++){
         targetArr.push(sanArr[i][0])
@@ -365,10 +367,10 @@ export class PokeUtil {
                 return b-a
             })
         }
-
+        //假设根据手牌数4*3，需要得到一个三连三带一飞机的牌型，num=3，应该是有三组三连，如果得到了四组三连的数字，则从大开始取三个，剩下的作为碎牌放到右侧
         console.log("countSan",sanArr,targetArr,sanLianArr,countSan)
         var sanLianArrOne = sanLianArr.find(function(x){
-            return x.length == countSan;
+            return x.length >= countSan;
         })
 
         if(!sanLianArrOne){
