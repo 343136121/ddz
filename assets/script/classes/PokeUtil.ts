@@ -347,7 +347,7 @@ export class PokeUtil {
 
         //找出所有三张的牌
         var sanArr = _res.filter(function (x) {
-            return x[1]==3 && x[0] != 2;
+            return x[1]==3 && x[0] != 15;
         });
         sanArr.sort(function(a,b){
             return -a[0]+b[0]
@@ -366,7 +366,7 @@ export class PokeUtil {
             })
         }
 
-        console.log(countSan)
+        console.log("countSan",sanArr,targetArr,sanLianArr,countSan)
         var sanLianArrOne = sanLianArr.find(function(x){
             return x.length == countSan;
         })
