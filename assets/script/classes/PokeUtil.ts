@@ -321,7 +321,13 @@ export class PokeUtil {
     }
 
     // 判断是否符合所有三张的牌型
-    private flagSanX(countSan: number){
+    /**
+     * 
+     * @param countSan 
+     * @param type 1是三带一，2是三带二
+     * @returns 
+     */
+    private flagSanX(countSan: number,type:number){
         // 先排序，遇到2和王，均放到最末尾
         this.pokeArr.sort((a, b) => {
             return b.sort - a.sort;
@@ -345,11 +351,12 @@ export class PokeUtil {
             _res.push([_arr[i], count]);  
             i += count;  
         }  
-        // console.log(_arr,_res )
-
+        console.log(_arr,_res )
+        
         //找出所有三张或四张的牌
+        // 类型是1的话，4=3+1.而如果是2的话
         var sanArr = _res.filter(function (x) {
-            return x[1]>=3 && x[0] != 15;
+            return (type == 2?x[1]==3:x[1]>=3) && x[0] != 15;
         });
         sanArr.sort(function(a,b){
             return -a[0]+b[0]
@@ -367,25 +374,18 @@ export class PokeUtil {
                 return b-a
             })
         }
-        //假设根据手牌数4*3，需要得到一个三连三带一飞机的牌型，num=3，应该是有三组三连，如果得到了四组三连的数字，则从大开始取三个，剩下的作为碎牌放到右侧
+        
         console.log("countSan",sanArr,targetArr,sanLianArr,countSan)
         var sanLianArrOne = sanLianArr.find(function(x){
-            return x.length >= countSan;
+            return x.length == countSan;
         })
 
         if(!sanLianArrOne){
             return false;
         }
 
-        console.log(sanLianArrOne)
-        
+        console.log("sanLianArrOne",sanLianArrOne)
 
-        // 找出除了三张的牌
-        var aloneArr = _arr.filter(function (x) {
-            return !sanLianArrOne.includes(x);
-        });
-        
-        console.log(aloneArr)
 
         // poke拆分
         var pokeSan = this.pokeArr.filter(function (x) {
@@ -432,7 +432,7 @@ export class PokeUtil {
             return false
         }
 
-        var flag = this.flagSanX(this.pokeArr.length/3)
+        var flag = this.flagSanX(this.pokeArr.length/3,0)
 
         if(!flag){
             return false;
@@ -450,7 +450,7 @@ export class PokeUtil {
         }
 
         var count = this.pokeArr.length/4;
-        var flag = this.flagSanX(count)
+        var flag = this.flagSanX(count,1)
 
         if(!flag){
             return false;
@@ -468,7 +468,7 @@ export class PokeUtil {
         }
 
         var count = this.pokeArr.length/5;
-        var flag = this.flagSanX(count)
+        var flag = this.flagSanX(count,2)
         // 判断后面是否是对子，假如二连飞机，则前0～5为三连，67和89为对子
         for(var i = count*3;i<this.pokeArr.length;i=i+2){
             if(this.pokeArr[i].num != this.pokeArr[i+1].num){
