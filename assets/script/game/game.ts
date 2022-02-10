@@ -177,22 +177,15 @@ export class game extends Component {
 
         // 先清除
         this.myOut.removeAllChildren();
-        this.myPokeOut = [];
 
         // 出牌
         var length = this.pokePrepare.length;
         // console.log(this.myPoke)
         // console.log(this.myHand.children)
         for (var k=length-1;k>=0;k--) {
-            
-            this.myPokeOut.push(this.myPoke[this.pokePrepare[k]])
             this.myPoke.splice(this.pokePrepare[k],1);
         }
 
-        // 排序，两种方式
-        let poke = new PokeUtil()
-        poke.pokeArr = JSON.parse(JSON.stringify(this.myPokeOut));
-        this.myPokeOut = poke.sort(2);
         for(var i in this.myPokeOut){
             this.addOnePoke("poke-"+this.myPokeOut[i].tag, this.myOut, this.myAtlas, this.pokePrefab,i);
         }
@@ -336,7 +329,8 @@ export class game extends Component {
         poke.sort(2);
         let temp = poke.checkPokeOut();
 
-        console.log(temp?"牌型合规":"牌型不合规",temp)
+        console.log(temp?"牌型合规":"牌型不合规",temp,"poke.pokeArr", poke.pokeArr)
+        this.myPokeOut = poke.pokeArr;
     }
     
 }

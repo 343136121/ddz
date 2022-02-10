@@ -351,7 +351,7 @@ export class PokeUtil {
             _res.push([_arr[i], count]);  
             i += count;  
         }  
-        console.log(_arr,_res )
+        // console.log(_arr,_res )
         
         //找出所有三张或四张的牌
         // 类型是1的话，4=3+1.而如果是2的话
@@ -383,7 +383,7 @@ export class PokeUtil {
             return false;
         }
 
-        console.log("sanLianArrOne",sanLianArrOne,"countSan",countSan)
+        // console.log("sanLianArrOne",sanLianArrOne,"countSan",countSan)
         if(sanLianArrOne.length > countSan){
             sanLianArrOne.splice(countSan,1)
         }
@@ -424,7 +424,7 @@ export class PokeUtil {
             }
         }
 
-        console.log(pokeSan,pokeAlone)
+        // console.log(pokeSan,pokeAlone)
         this.pokeArr = pokeSan.concat(pokeAlone)
         return countSan;
 
