@@ -91,8 +91,9 @@ export class game extends Component {
     ws: WebSocket;
     createWs(){
         let that = this;
-        // this.ws = new WebSocket("ws://127.0.0.1:10282");
-        this.ws = new WebSocket("ws://192.168.1.7:10282");
+        this.ws = new WebSocket("ws://127.0.0.1:10282");
+
+        // this.ws = new WebSocket("ws://192.168.1.7:10282");
         // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
@@ -335,7 +336,7 @@ export class game extends Component {
         poke.sort(2);
         let temp = poke.checkPokeOut();
 
-        console.log("temp",temp)
+        console.log(temp?"牌型合规":"牌型不合规",temp)
     }
     
 }

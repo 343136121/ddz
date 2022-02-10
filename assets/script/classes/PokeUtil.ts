@@ -374,26 +374,56 @@ export class PokeUtil {
                 return b-a
             })
         }
-        
-        console.log("countSan",sanArr,targetArr,sanLianArr,countSan)
+
         var sanLianArrOne = sanLianArr.find(function(x){
-            return x.length == countSan;
+            return x.length >= countSan;
         })
 
         if(!sanLianArrOne){
             return false;
         }
 
-        console.log("sanLianArrOne",sanLianArrOne)
+        console.log("sanLianArrOne",sanLianArrOne,"countSan",countSan)
+        if(sanLianArrOne.length > countSan){
+            sanLianArrOne.splice(countSan,1)
+        }
 
+        // 左侧都是三张
+        var b = sanLianArrOne.concat(sanLianArrOne).concat(sanLianArrOne).sort().reverse()
+        var c = JSON.parse(JSON.stringify(b))
+        // 右侧碎牌,从总数组中减去a得到
+        var a =[];
+        for (var i = 0;i<this.pokeArr.length;i++){
+            a.push(this.pokeArr[i].num);
+        }
+        
+        
 
-        // poke拆分
-        var pokeSan = this.pokeArr.filter(function (x) {
-            return sanLianArrOne.includes(x.num);
-        });
-        var pokeAlone = this.pokeArr.filter(function (x) {
-            return !sanLianArrOne.includes(x.num);
-        });
+        for(var i =0;i<a.length;i++){
+            for(var j=0;j<b.length;j++){
+                if(a[i]==b[j]){a.splice(i,1);b.splice(j,1);j--;i--; break;}
+            }
+        }
+
+        console.log(
+            "a",a,
+            "b",b,
+            "c",c,
+            "over"
+            )
+
+        // 得到c对应的poke  777666555444    {num:7}
+        var pokeSan = [];
+        var pokeAlone = JSON.parse(JSON.stringify(this.pokeArr))
+        for (var i = 0;i<c.length;i++){
+            for(var j=0;j<pokeAlone.length;j++){
+                if(c[i]==pokeAlone[j].num){
+                    pokeSan.push(pokeAlone[j])
+                    c.splice(i,1);pokeAlone.splice(j,1);j--;i--; break;
+                }
+            }
+        }
+
         console.log(pokeSan,pokeAlone)
         this.pokeArr = pokeSan.concat(pokeAlone)
         return countSan;
