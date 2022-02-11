@@ -142,8 +142,13 @@ export class PokeUtil {
             }
 
             // 牌型顺序需要调整
-
-            if(this.isDan()){
+            if(this.isZhaDan()){
+                return this.isZhaDan()
+            }else if(this.isSiDan()){
+                return this.isSiDan()
+            }else if(this.isSiDui()){
+                return this.isSiDui()
+            }else if(this.isDan()){
                 return this.isDan()
             }else if(this.isDui()){
                 return this.isDui()
@@ -163,10 +168,8 @@ export class PokeUtil {
                 return this.isSanDuiX()
             }else if(this.isShun()){
                 return this.isShun()
-            }else if(this.isSiDan()){
-                return this.isSiDan()
-            }else if(this.isSiDui()){
-                return this.isSiDui()
+            }else if(this.isHuoJian()){
+                return this.isHuoJian();
             }
             
     }
@@ -599,10 +602,33 @@ export class PokeUtil {
     }
 
     isZhaDan(){
-        
+        if(this.pokeArr.length != 4){
+            return false
+        }
+
+        if(
+            this.pokeArr[0].num != this.pokeArr[1].num 
+            || this.pokeArr[0].num != this.pokeArr[2].num
+            || this.pokeArr[0].num != this.pokeArr[3].num){
+            return false
+        }
+        this.pokeNum.type = this.pokeType.ZhaDan;
+        this.pokeNum.value = this.pokeArr[0].num;
+        return this.pokeNum;
     }
 
     isHuoJian(){
+        if(this.pokeArr.length != 2){
+            return false
+        }
 
+        if(
+            this.pokeArr[0].num != 17 
+            || this.pokeArr[1].num != 16){
+            return false
+        }
+        this.pokeNum.type = this.pokeType.HuoJian;
+        this.pokeNum.value = this.pokeArr[0].num;
+        return this.pokeNum;
     }
 }
