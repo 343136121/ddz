@@ -76,6 +76,8 @@ export class game extends Component {
     public pokeMask:Node;
 
     public mySeat: number;
+    public leftSeat:number;
+    public rightSeat:number;
     public seats: Object[];
     public room_id:number;
 
@@ -131,14 +133,14 @@ export class game extends Component {
                     let my = data.data.seats[that.mySeat-1]         
                     that.myName.getComponent(Label).string = my.client_id
 
-                    let leftSeat = (that.mySeat+2)%3 == 0 ? 3 : (that.mySeat+2)%3 ;
-                    let left = data.data.seats[leftSeat-1]
+                    that.leftSeat = (that.mySeat+2)%3 == 0 ? 3 : (that.mySeat+2)%3 ;
+                    let left = data.data.seats[that.leftSeat-1]
                     if(left.status >0){
                         that.leftName.getComponent(Label).string = left.client_id
                     }
 
-                    let rightSeat = (that.mySeat+1)%3 == 0 ? 3 : (that.mySeat+1)%3 ;
-                    let right = data.data.seats[rightSeat-1]
+                    that.rightSeat = (that.mySeat+1)%3 == 0 ? 3 : (that.mySeat+1)%3 ;
+                    let right = data.data.seats[that.rightSeat-1]
                     if(right.status >0){
                         that.rightName.getComponent(Label).string = right.client_id
                     }
@@ -146,6 +148,12 @@ export class game extends Component {
                 case "start":
                     that.myPoke = data.data['player'+that.mySeat]
                     that.createMyHand(that.myPoke.length);  
+                    that.rightPoke = data.data['player'+that.rightSeat]
+                    that.createRightHand(that.rightPoke.length);  
+                    that.leftPoke = data.data['player'+that.leftSeat]
+                    that.createLeftHand(that.leftPoke.length);  
+                    that.bossPoke = data.data['boss'];
+                    that.createBoss(that.bossPoke.length);  
                     that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
                     that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
                     break;
@@ -170,7 +178,7 @@ export class game extends Component {
 
         for (var i = this.myHand.children.length; i < num; i++) {
 
-            this.addOnePoke("poke-"+this.myPoke[i].tag, this.myHand, this.myAtlas, this.pokePrefab,i);
+            this.addOnePoke("poke-"+this.myPoke[i].tag, this.myHand, this.myAtlas, this.pokePrefab,i,this.myPoke);
             // this.myHand.children[i].on(Input.EventType.TOUCH_START,this.clickMyHand,this);
 
             // 获取其中一张牌的y值便于以后操作
@@ -178,7 +186,43 @@ export class game extends Component {
         }
     }
 
-    addOnePoke (atlasName,layout,atlas,prefab,i) {
+    createRightHand(num) {
+        this.rightHand.removeAllChildren();
+        // 排序，两种方式
+        let poke = new PokeUtil()
+        poke.pokeArr = JSON.parse(JSON.stringify(this.rightPoke));
+        this.rightPoke = poke.sort(this.sortType);
+
+        for (var i = this.rightHand.children.length; i < num; i++) {
+            this.addOnePoke("poke-"+this.rightPoke[i].tag, this.rightHand, this.rightAtlas, this.pokePrefab,i,this.rightPoke);
+        }
+    }
+
+    createLeftHand(num) {
+        this.leftHand.removeAllChildren();
+        // 排序，两种方式
+        let poke = new PokeUtil()
+        poke.pokeArr = JSON.parse(JSON.stringify(this.leftPoke));
+        this.leftPoke = poke.sort(this.sortType);
+
+        for (var i = this.leftHand.children.length; i < num; i++) {
+            this.addOnePoke("poke-"+this.leftPoke[i].tag, this.leftHand, this.leftAtlas, this.pokePrefab,i,this.leftPoke);
+        }
+    }
+
+    createBoss(num){
+        this.bossNode.removeAllChildren();
+        // 排序，两种方式
+        let poke = new PokeUtil()
+        poke.pokeArr = JSON.parse(JSON.stringify(this.bossPoke));
+        this.bossPoke = poke.sort(this.sortType);
+
+        for (var i = this.bossNode.children.length; i < num; i++) {
+            this.addOnePoke("poke-"+this.bossPoke[i].tag, this.bossNode, this.backAtlas, this.pokePrefab,i,this.bossPoke);
+        }
+    }
+
+    addOnePoke (atlasName,layout,atlas,prefab,i,pokeArr) {
     
         var poke = instantiate(prefab);
         var frame = atlas.getSpriteFrame(atlasName);
@@ -198,7 +242,7 @@ export class game extends Component {
         poke.touched = false;
 
         // 将牌信息写入节点方便判断
-        poke.poke = this.myPoke[i]
+        poke.poke = pokeArr[i]
     }
 
     toggleSortType(){
@@ -225,7 +269,7 @@ export class game extends Component {
         }
 
         for(var i in this.myPokeOut){
-            this.addOnePoke("poke-"+this.myPokeOut[i].tag, this.myOut, this.myAtlas, this.pokePrefab,i);
+            this.addOnePoke("poke-"+this.myPokeOut[i].tag, this.myOut, this.myAtlas, this.pokePrefab,i,this.myPokeOut);
         }
 
         // 重新排序手牌
