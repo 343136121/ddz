@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect } from 'cc';
+import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import Xhr from 'xhr';
@@ -27,6 +27,8 @@ export class game extends Component {
     public myHand: Node;  //  手牌
     @property(Node)
     public myOut: Node;   //  出牌
+    @property(Node)
+    public myName: Node;   //  名字
     public myPoke:any[];
     public sortType:number = 1; // 1:大到小排序;2:牌型排序，炸弹最大;
     @property(Node)
@@ -34,6 +36,8 @@ export class game extends Component {
     @property(Node)
     public btn_chupai:Node;
     public myPokeOut:any[];
+    @property(Node)
+    public btn_ready:Node;
     // 当前牌池类型与大小，判断能否出这个牌压上（后台需要时刻交互）
 
 
@@ -43,6 +47,8 @@ export class game extends Component {
     public rightHand: Node;  //  手牌
     @property(Node)
     public rightOut: Node;   //  出牌
+    @property(Node)
+    public rightName: Node;   //  名字
     public rightPoke:any[];
 
     @property(SpriteAtlas)
@@ -51,6 +57,8 @@ export class game extends Component {
     public leftHand: Node;  //  手牌
     @property(Node)
     public leftOut: Node;   //  出牌
+    @property(Node)
+    public leftName: Node;   //  名字
     public leftPoke:any[];
 
     // 地主牌位置
@@ -64,8 +72,13 @@ export class game extends Component {
 
     @property(Prefab)
     public pokePrefab: Prefab;
-    @property(Node)
+    @property(Node) 
     public pokeMask:Node;
+
+    public mySeat: number;
+    public seats: Object[];
+    public room_id:number;
+
 
     start () {
         // [3]
@@ -76,10 +89,14 @@ export class game extends Component {
         this.createWs();
 
         window.setTimeout(()=>{
+            // 坐下后，则可收到房间id，开始游戏后收到本局游戏id
             this.ws.send(JSON.stringify({
-                'type':'start'
+                // 'type':'start',
+                'type':'sit',
             }));
         },1000);
+
+        this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
 
         this.onTouchEvent();
     }
@@ -105,8 +122,29 @@ export class game extends Component {
             console.log(data)
             // 此处判断后台传来的json数据
             switch(data.type){
-                case "hand":
-                    that.myPoke = data.data
+                case "sit":
+                    that.mySeat = data.data.seat
+                    break;
+                case "seats":
+                    that.room_id = data.data.room_id;
+
+                    let my = data.data.seats[that.mySeat-1]         
+                    that.myName.getComponent(Label).string = my.client_id
+
+                    let leftSeat = (that.mySeat+2)%3 == 0 ? 3 : (that.mySeat+2)%3 ;
+                    let left = data.data.seats[leftSeat-1]
+                    if(left.status >0){
+                        that.leftName.getComponent(Label).string = left.client_id
+                    }
+
+                    let rightSeat = (that.mySeat+1)%3 == 0 ? 3 : (that.mySeat+1)%3 ;
+                    let right = data.data.seats[rightSeat-1]
+                    if(right.status >0){
+                        that.rightName.getComponent(Label).string = right.client_id
+                    }
+                    break;
+                case "start":
+                    that.myPoke = data.data['player'+that.mySeat]
                     that.createMyHand(that.myPoke.length);  
                     that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
                     that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
@@ -193,6 +231,14 @@ export class game extends Component {
         // 重新排序手牌
         this.createMyHand(this.myPoke.length);  
 
+    }
+
+    ready(){
+        this.ws.send(JSON.stringify({
+            'type':'ready',
+            'room_id':this.room_id,
+            'seat':this.mySeat
+        }));
     }
 
     update (deltaTime: number) {
