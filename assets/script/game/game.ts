@@ -32,12 +32,19 @@ export class game extends Component {
     public myPoke:any[];
     public sortType:number = 1; // 1:大到小排序;2:牌型排序，炸弹最大;
     @property(Node)
+    public btn_ready:Node;
+    @property(Node)
     public btn_sort:Node;
     @property(Node)
-    public btn_chupai:Node;
-    public myPokeOut:any[];
+    public btn_jiao:Node;
     @property(Node)
-    public btn_ready:Node;
+    public btn_bujiao:Node;
+    @property(Node)
+    public btn_chupai:Node;
+    @property(Node)
+    public btn_pass:Node;
+    public myPokeOut:any[];
+
     // 当前牌池类型与大小，判断能否出这个牌压上（后台需要时刻交互）
 
 
@@ -80,6 +87,9 @@ export class game extends Component {
     public rightSeat:number;
     public seats: Object[];
     public room_id:number;
+    public round:number;
+    public seatNow:number;  //当前该出牌的seat
+    public game_id:number;
 
 
     start () {
@@ -112,7 +122,7 @@ export class game extends Component {
         let that = this;
         this.ws = new WebSocket("ws://127.0.0.1:10282");
 
-        // this.ws = new WebSocket("ws://192.168.1.7:10282");
+        // this.ws = new WebSocket("ws://192.168.1.36:10282");
         // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
@@ -130,23 +140,25 @@ export class game extends Component {
                 case "seats":
                     that.room_id = data.data.room_id;
 
-                    let my = data.data.seats[that.mySeat-1]         
+                    let my = data.data.seats[that.mySeat['seat']-1]         
                     that.myName.getComponent(Label).string = my.client_id
 
-                    that.leftSeat = (that.mySeat+2)%3 == 0 ? 3 : (that.mySeat+2)%3 ;
+                    that.leftSeat = (that.mySeat['seat']+2)%3 == 0 ? 3 : (that.mySeat['seat']+2)%3 ;
                     let left = data.data.seats[that.leftSeat-1]
                     if(left.status >0){
                         that.leftName.getComponent(Label).string = left.client_id
                     }
 
-                    that.rightSeat = (that.mySeat+1)%3 == 0 ? 3 : (that.mySeat+1)%3 ;
+                    that.rightSeat = (that.mySeat['seat']+1)%3 == 0 ? 3 : (that.mySeat['seat']+1)%3 ;
                     let right = data.data.seats[that.rightSeat-1]
                     if(right.status >0){
                         that.rightName.getComponent(Label).string = right.client_id
                     }
                     break;
                 case "start":
-                    that.myPoke = data.data['player'+that.mySeat]
+                    that.game_id = data.data.game_id
+
+                    that.myPoke = data.data['player'+that.mySeat['seat']]
                     that.createMyHand(that.myPoke.length);  
                     that.rightPoke = data.data['player'+that.rightSeat]
                     that.createRightHand(that.rightPoke.length);  
@@ -156,7 +168,41 @@ export class game extends Component {
                     that.createBoss(that.bossPoke.length);  
                     that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
                     that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
+
+                    // 按钮隐藏与显示
+                    that.btn_ready.active = false;
+                    that.btn_sort.active = true;
+                    that.seatNow = data.data['seat'];
+
+                    console.warn('that.seatNow',that.seatNow,'that.mySeat',that.mySeat)
+                    if(that.seatNow == that.mySeat['seat']){
+                        // 显示叫地主 或 不叫 按钮
+                        that.btn_jiao.active = true;
+                        that.btn_bujiao.active = true;
+                        that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
+                        // that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
+                    }
+
                     break;
+                case "jiao":
+                
+                    break;
+                case "jiao_over":
+                    // 叫地主结束,从对应seat位置(地主)开始出牌了
+                    let seatNext = data.data.seatNext
+                    if(seatNext == that.mySeat['seat']){
+                        that.btn_jiao.active = false;
+                        that.btn_bujiao.active = false;
+                        that.btn_chupai.active = true;
+                        // that.btn_pass.active = true;
+
+                        that.myPoke = that.myPoke.concat(that.bossPoke)
+                        that.createMyHand(that.myPoke.length); 
+                        that.bossPoke = [];
+                        that.createBoss(that.bossPoke.length);  
+                    }
+                    break;
+                    
             }
         };
         this.ws.onerror = function (event) {
@@ -281,9 +327,29 @@ export class game extends Component {
         this.ws.send(JSON.stringify({
             'type':'ready',
             'room_id':this.room_id,
-            'seat':this.mySeat
+            'seat':this.mySeat['seat']
         }));
     }
+
+    jiao(){
+        this.ws.send(JSON.stringify({
+            'type':'jiao',
+            'room_id':this.room_id,
+            'game_id':this.game_id,
+            'room_seat_id':this.mySeat['id'],
+            'jiao':1
+        }));
+    }
+
+    // bujiao(){
+    //     this.ws.send(JSON.stringify({
+    //         'type':'jiao',
+    //         'room_id':this.room_id,
+    //         'seat':this.mySeat,
+    //         'game_id':this.game_id,
+    //         'jiao':0
+    //     }));
+    // }
 
     update (deltaTime: number) {
         // [4]
