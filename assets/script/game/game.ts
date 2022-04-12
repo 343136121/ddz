@@ -180,17 +180,28 @@ export class game extends Component {
                         that.btn_jiao.active = true;
                         that.btn_bujiao.active = true;
                         that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
-                        // that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
+                        that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
                     }
 
                     break;
                 case "jiao":
-                
+                    that.seatNow = data.data.seatNext;
+
+                    if(that.seatNow == that.mySeat['seat']){
+                        // 显示叫地主 或 不叫 按钮
+                        that.btn_jiao.active = true;
+                        that.btn_bujiao.active = true;
+                        that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
+                        that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
+                    }else{
+                        that.btn_jiao.active = false;
+                        that.btn_bujiao.active = false;
+                    }
                     break;
                 case "jiao_over":
                     // 叫地主结束,从对应seat位置(地主)开始出牌了
-                    let seatNext = data.data.seatNext
-                    if(seatNext == that.mySeat['seat']){
+                    that.seatNow = data.data.seatNext
+                    if(that.seatNow == that.mySeat['seat']){
                         that.btn_jiao.active = false;
                         that.btn_bujiao.active = false;
                         that.btn_chupai.active = true;
@@ -198,9 +209,21 @@ export class game extends Component {
 
                         that.myPoke = that.myPoke.concat(that.bossPoke)
                         that.createMyHand(that.myPoke.length); 
-                        that.bossPoke = [];
-                        that.createBoss(that.bossPoke.length);  
+                    }else{
+                        that.btn_jiao.active = false;
+                        that.btn_bujiao.active = false;
+
+                        if(that.seatNow == that.rightSeat) {
+                            that.rightPoke = that.rightPoke.concat(that.bossPoke)
+                            that.createRightHand(that.rightPoke.length); 
+                        } else if(that.seatNow == that.leftSeat){
+                            that.leftPoke = that.leftPoke.concat(that.bossPoke)
+                            that.createLeftHand(that.leftPoke.length); 
+                        }
                     }
+
+                    that.bossPoke = [];
+                    that.createBoss(that.bossPoke.length);  
                     break;
                     
             }
@@ -341,15 +364,15 @@ export class game extends Component {
         }));
     }
 
-    // bujiao(){
-    //     this.ws.send(JSON.stringify({
-    //         'type':'jiao',
-    //         'room_id':this.room_id,
-    //         'seat':this.mySeat,
-    //         'game_id':this.game_id,
-    //         'jiao':0
-    //     }));
-    // }
+    bujiao(){
+        this.ws.send(JSON.stringify({
+            'type':'jiao',
+            'room_id':this.room_id,
+            'game_id':this.game_id,
+            'room_seat_id':this.mySeat['id'],
+            'jiao':0
+        }));
+    }
 
     update (deltaTime: number) {
         // [4]
