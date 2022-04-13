@@ -44,6 +44,7 @@ export class game extends Component {
     @property(Node)
     public btn_pass:Node;
     public myPokeOut:any[];
+    public checkedPokeOut:Object;
 
     // 当前牌池类型与大小，判断能否出这个牌压上（后台需要时刻交互）
 
@@ -57,6 +58,7 @@ export class game extends Component {
     @property(Node)
     public rightName: Node;   //  名字
     public rightPoke:any[];
+    public rightPokeOut:any[];
 
     @property(SpriteAtlas)
     public leftAtlas: SpriteAtlas;
@@ -67,6 +69,7 @@ export class game extends Component {
     @property(Node)
     public leftName: Node;   //  名字
     public leftPoke:any[];
+    public leftPokeOut:any[];
 
     // 地主牌位置
     @property(Node)
@@ -87,7 +90,7 @@ export class game extends Component {
     public rightSeat:number;
     public seats: Object[];
     public room_id:number;
-    public round:number;
+    public seatChupai:number;   //当前牌河内的出牌seat
     public seatNow:number;  //当前该出牌的seat
     public game_id:number;
 
@@ -120,6 +123,13 @@ export class game extends Component {
     ws: WebSocket;
     createWs(){
         let that = this;
+
+        that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
+        that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
+        that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
+        that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
+        that.btn_pass.on(Input.EventType.TOUCH_START,that.pass,that);// 过
+
         this.ws = new WebSocket("ws://127.0.0.1:10282");
 
         // this.ws = new WebSocket("ws://192.168.1.36:10282");
@@ -166,9 +176,7 @@ export class game extends Component {
                     that.createLeftHand(that.leftPoke.length);  
                     that.bossPoke = data.data['boss'];
                     that.createBoss(that.bossPoke.length);  
-                    that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
-                    that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
-
+                    
                     // 按钮隐藏与显示
                     that.btn_ready.active = false;
                     that.btn_sort.active = true;
@@ -179,8 +187,6 @@ export class game extends Component {
                         // 显示叫地主 或 不叫 按钮
                         that.btn_jiao.active = true;
                         that.btn_bujiao.active = true;
-                        that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
-                        that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
                     }
 
                     break;
@@ -191,8 +197,6 @@ export class game extends Component {
                         // 显示叫地主 或 不叫 按钮
                         that.btn_jiao.active = true;
                         that.btn_bujiao.active = true;
-                        that.btn_jiao.on(Input.EventType.TOUCH_START,that.jiao,that);// 叫地主
-                        that.btn_bujiao.on(Input.EventType.TOUCH_START,that.bujiao,that);// 不叫地主
                     }else{
                         that.btn_jiao.active = false;
                         that.btn_bujiao.active = false;
@@ -201,6 +205,7 @@ export class game extends Component {
                 case "jiao_over":
                     // 叫地主结束,从对应seat位置(地主)开始出牌了
                     that.seatNow = data.data.seatNext
+                    that.seatChupai = data.data.seatChupai
                     if(that.seatNow == that.mySeat['seat']){
                         that.btn_jiao.active = false;
                         that.btn_bujiao.active = false;
@@ -225,7 +230,39 @@ export class game extends Component {
                     that.bossPoke = [];
                     that.createBoss(that.bossPoke.length);  
                     break;
-                    
+                case "chupai":
+                    that.seatNow = data.data.seatNext
+                    that.seatChupai = data.data.seatChupai
+                    that.checkedPokeOut = data.data.checkedPokeOut  // 牌型大小！
+
+                    if(that.seatNow == that.mySeat['seat']){
+                        that.btn_chupai.active = true;
+                        that.btn_pass.active = true;
+
+                    }else{
+                        that.btn_chupai.active = false;
+                        that.btn_pass.active = false;
+                    }
+
+                    if(that.seatChupai == that.rightSeat) {
+                        that.rightPoke = data.data.pokeHand
+                        that.rightPokeOut = data.data.pokeOut
+                        console.warn('data.data.pokeOut1',data.data.pokeOut)
+                        if(data.data.pokeOut && data.data.pokeOut.length>0){
+                            that.createRightHand(that.rightPoke.length);     
+                            that.createRightOut(); 
+                        }  
+                    } else if(that.seatChupai == that.leftSeat){
+                        that.leftPoke = data.data.pokeHand
+                        that.leftPokeOut = data.data.pokeOut
+                        console.warn('data.data.pokeOut2',data.data.pokeOut)
+                        if(data.data.pokeOut && data.data.pokeOut.length>0){
+                            that.createLeftHand(that.leftPoke.length); 
+                            that.createLeftOut();
+                        }
+                    }
+
+                    break;    
             }
         };
         this.ws.onerror = function (event) {
@@ -267,6 +304,20 @@ export class game extends Component {
         }
     }
 
+    createRightOut(){
+        // 先清除
+        this.rightOut.removeAllChildren();
+
+        // 排序，两种方式
+        let poke = new PokeUtil()
+        poke.pokeArr = JSON.parse(JSON.stringify(this.rightPokeOut));
+        this.rightPokeOut = poke.sort(this.sortType);
+
+        for(var i in this.rightPokeOut){
+            this.addOnePoke("poke-"+this.rightPokeOut[i].tag, this.rightOut, this.rightAtlas, this.pokePrefab,i,this.rightPokeOut);
+        }
+    }
+
     createLeftHand(num) {
         this.leftHand.removeAllChildren();
         // 排序，两种方式
@@ -276,6 +327,21 @@ export class game extends Component {
 
         for (var i = this.leftHand.children.length; i < num; i++) {
             this.addOnePoke("poke-"+this.leftPoke[i].tag, this.leftHand, this.leftAtlas, this.pokePrefab,i,this.leftPoke);
+        }
+    }
+
+    
+    createLeftOut(){
+        // 先清除
+        this.leftOut.removeAllChildren();
+
+        // 排序，两种方式
+        let poke = new PokeUtil()
+        poke.pokeArr = JSON.parse(JSON.stringify(this.leftPokeOut));
+        this.leftPokeOut = poke.sort(this.sortType);
+
+        for(var i in this.leftPokeOut){
+            this.addOnePoke("poke-"+this.leftPokeOut[i].tag, this.leftOut, this.leftAtlas, this.pokePrefab,i,this.leftPokeOut);
         }
     }
 
@@ -324,28 +390,6 @@ export class game extends Component {
         // );
     }
 
-    chupai(){
-
-        // 先清除
-        this.myOut.removeAllChildren();
-
-        // 出牌
-        var length = this.pokePrepare.length;
-        // console.log(this.myPoke)
-        // console.log(this.myHand.children)
-        for (var k=length-1;k>=0;k--) {
-            this.myPoke.splice(this.pokePrepare[k],1);
-        }
-
-        for(var i in this.myPokeOut){
-            this.addOnePoke("poke-"+this.myPokeOut[i].tag, this.myOut, this.myAtlas, this.pokePrefab,i,this.myPokeOut);
-        }
-
-        // 重新排序手牌
-        this.createMyHand(this.myPoke.length);  
-
-    }
-
     ready(){
         this.ws.send(JSON.stringify({
             'type':'ready',
@@ -371,6 +415,50 @@ export class game extends Component {
             'game_id':this.game_id,
             'room_seat_id':this.mySeat['id'],
             'jiao':0
+        }));
+    }
+
+    chupai(){
+        // 先清除
+        this.myOut.removeAllChildren();
+
+        // 出牌
+        var length = this.pokePrepare.length;
+        // console.log(this.myPoke)
+        // console.log(this.myHand.children)
+        for (var k=length-1;k>=0;k--) {
+            this.myPoke.splice(this.pokePrepare[k],1);
+        }
+
+        for(var i in this.myPokeOut){
+            this.addOnePoke("poke-"+this.myPokeOut[i].tag, this.myOut, this.myAtlas, this.pokePrefab,i,this.myPokeOut);
+        }
+
+        // 重新排序手牌
+        this.createMyHand(this.myPoke.length);  
+
+        this.ws.send(JSON.stringify({
+            'type':'chupai',
+            'room_id':this.room_id,
+            'game_id':this.game_id,
+            'room_seat_id':this.mySeat['id'],
+            'seatChupai':this.mySeat['seat'],
+            'pokeOut':this.myPokeOut,
+            'pokeHand':this.myPoke,
+            'checkedPokeOut':this.checkedPokeOut,
+        }));
+    }
+
+    pass(){
+        this.ws.send(JSON.stringify({
+            'type':'chupai',
+            'room_id':this.room_id,
+            'game_id':this.game_id,
+            'room_seat_id':this.mySeat['id'],
+            'seatChupai':this.seatChupai,
+            'pokeOut':null,
+            'pokeHand':null,
+            'checkedPokeOut':null,
         }));
     }
 
@@ -506,10 +594,11 @@ export class game extends Component {
         let poke = new PokeUtil()
         poke.pokeArr = JSON.parse(JSON.stringify(this.myPokeOut));
         poke.sort(2);
-        let temp = poke.checkPokeOut();
+        this.checkedPokeOut = poke.checkPokeOut();
 
-        console.log(temp?"牌型合规":"牌型不合规",temp,"poke.pokeArr", poke.pokeArr)
+        console.log(this.checkedPokeOut?"牌型合规":"牌型不合规",this.checkedPokeOut,"poke.pokeArr", poke.pokeArr)
         this.myPokeOut = poke.pokeArr;
+        // 判断能否出牌
     }
     
 }
