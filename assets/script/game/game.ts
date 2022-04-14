@@ -167,6 +167,12 @@ export class game extends Component {
                         that.rightName.getComponent(Label).string = right.client_id
                     }
                     break;
+                case "ready":
+                    if(that.mySeat['seat'] == data.data.seat){
+                        that.btn_ready.active = false;
+                    }
+                    // 此处写其他人已准备
+                    break;
                 case "start":
                     that.game_id = data.data.game_id
 
