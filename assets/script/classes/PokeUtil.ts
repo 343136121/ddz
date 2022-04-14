@@ -631,4 +631,33 @@ export class PokeUtil {
         this.pokeNum.value = this.pokeArr[0].num;
         return this.pokeNum;
     }
+
+    /**
+     * 
+     * @param poke 想出的牌
+     * @param pokeNow 牌池中的牌
+     */
+    static checkBS(poke,pokeNow){
+        console.warn("poke",poke,"pokeNow",pokeNow)
+
+
+        if(poke.type == 90){
+            return true;
+        }
+
+        if(poke.type == 80){
+            if(pokeNow.type == 90){
+                return false;
+            }else if(pokeNow.type == 80 && poke.value <= pokeNow.value){
+                return false;
+            }
+            return true
+        }
+
+        if(poke.type == pokeNow.type && poke.value>pokeNow.value){
+            return true;
+        }
+
+        return false;
+    }
 }

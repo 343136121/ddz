@@ -41,12 +41,14 @@ export class game extends Component {
     public btn_bujiao:Node;
     @property(Node)
     public btn_chupai:Node;
+    public if_chupai:boolean = false;
     @property(Node)
     public btn_pass:Node;
     public myPokeOut:any[];
     public checkedPokeOut:Object;
+    // 当前牌池类型与大小，判断能否出这个牌压上
+    public checkedPokeOutNow:Object;
 
-    // 当前牌池类型与大小，判断能否出这个牌压上（后台需要时刻交互）
 
 
     @property(SpriteAtlas)
@@ -130,9 +132,9 @@ export class game extends Component {
         that.btn_chupai.on(Input.EventType.TOUCH_START,that.chupai,that);// 出牌
         that.btn_pass.on(Input.EventType.TOUCH_START,that.pass,that);// 过
 
-        this.ws = new WebSocket("ws://127.0.0.1:10282");
+        // this.ws = new WebSocket("ws://127.0.0.1:10282");
 
-        // this.ws = new WebSocket("ws://192.168.1.36:10282");
+        this.ws = new WebSocket("ws://192.168.1.21:10282");
         // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
@@ -203,10 +205,12 @@ export class game extends Component {
                     }
                     break;
                 case "jiao_over":
+                    // 最好还是和上面jiao整合一下咯
                     // 叫地主结束,从对应seat位置(地主)开始出牌了
                     that.seatNow = data.data.seatNext
                     that.seatChupai = data.data.seatChupai
                     if(that.seatNow == that.mySeat['seat']){
+                        that.if_chupai = true;
                         that.btn_jiao.active = false;
                         that.btn_bujiao.active = false;
                         that.btn_chupai.active = true;
@@ -233,16 +237,28 @@ export class game extends Component {
                 case "chupai":
                     that.seatNow = data.data.seatNext
                     that.seatChupai = data.data.seatChupai
-                    that.checkedPokeOut = data.data.checkedPokeOut  // 牌型大小！
+                    that.checkedPokeOutNow = data.data.checkedPokeOut  // 牌型大小！
 
                     if(that.seatNow == that.mySeat['seat']){
+                        that.if_chupai = true;
                         that.btn_chupai.active = true;
                         that.btn_pass.active = true;
-
+                        that.myOut.removeAllChildren();
+                        if(that.seatChupai == that.seatNow){
+                            that.btn_pass.active = false;
+                        }    
                     }else{
                         that.btn_chupai.active = false;
                         that.btn_pass.active = false;
+                        if(that.seatNow == that.rightSeat){
+                            that.rightOut.removeAllChildren();
+                        }else if (that.seatNow == that.leftSeat){
+                            that.leftOut.removeAllChildren();
+                        }
                     }
+
+                   
+                    
 
                     if(that.seatChupai == that.rightSeat) {
                         that.rightPoke = data.data.pokeHand
@@ -263,6 +279,10 @@ export class game extends Component {
                     }
 
                     break;    
+                case 'win':
+                    alert('游戏结束，获胜者'+data.data.seat['client_id']);
+                    // 额外要加获胜者出牌的逻辑
+                    break;
             }
         };
         this.ws.onerror = function (event) {
@@ -419,6 +439,11 @@ export class game extends Component {
     }
 
     chupai(){
+        if(!this.if_chupai){
+            alert('不能这么出牌')
+            return false;
+        }
+
         // 先清除
         this.myOut.removeAllChildren();
 
@@ -457,8 +482,8 @@ export class game extends Component {
             'room_seat_id':this.mySeat['id'],
             'seatChupai':this.seatChupai,
             'pokeOut':null,
-            'pokeHand':null,
-            'checkedPokeOut':null,
+            'pokeHand':this.myPoke,
+            'checkedPokeOut':this.checkedPokeOutNow,
         }));
     }
 
@@ -598,7 +623,18 @@ export class game extends Component {
 
         console.log(this.checkedPokeOut?"牌型合规":"牌型不合规",this.checkedPokeOut,"poke.pokeArr", poke.pokeArr)
         this.myPokeOut = poke.pokeArr;
-        // 判断能否出牌
+
+        if(!this.checkedPokeOut){
+            // 牌型不合规
+            this.if_chupai = false;
+        }else{
+            this.if_chupai = true;
+            if(this.checkedPokeOutNow && this.seatChupai != this.seatNow){
+                // 判断牌型与大小后才可继续
+                this.if_chupai = PokeUtil.checkBS(this.checkedPokeOut,this.checkedPokeOutNow)  
+            }
+        }
+
     }
     
 }
