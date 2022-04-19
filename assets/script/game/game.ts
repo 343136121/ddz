@@ -1,5 +1,5 @@
 
-import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label } from 'cc';
+import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label, Button } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import Xhr from 'xhr';
@@ -249,6 +249,7 @@ export class game extends Component {
                         that.if_chupai = true;
                         that.btn_chupai.active = true;
                         that.btn_pass.active = true;
+                        that.btn_pass.getComponent(Button).interactable = true;
                         that.myOut.removeAllChildren();
                         if(that.seatChupai == that.seatNow){
                             that.btn_pass.active = false;
