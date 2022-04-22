@@ -2,6 +2,7 @@
 import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label, Button } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
+import { AudioManager } from "../classes/AudioManager";
 import Xhr from 'xhr';
 import * as _ from 'lodash';
 /**
@@ -102,7 +103,7 @@ export class game extends Component {
     }
 
     onEnable (){
-        
+        AudioManager.playMusic();
         this.createWs();
 
         window.setTimeout(()=>{
@@ -418,6 +419,7 @@ export class game extends Component {
     }
 
     ready(){
+        AudioManager.playSound('click');
         this.ws.send(JSON.stringify({
             'type':'ready',
             'room_id':this.room_id,
