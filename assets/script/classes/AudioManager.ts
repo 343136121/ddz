@@ -15,6 +15,12 @@ export class AudioManager {
         audioSource.play();
     }
 
+    public static pauseMusic () {
+        const audioSource = AudioManager._audioSource!;
+
+        audioSource.pause();
+    }
+
     public static playSound(name: string) {
         const audioSource = AudioManager._audioSource!;
 
