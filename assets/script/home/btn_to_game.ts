@@ -1,7 +1,7 @@
 
 import { _decorator, Component, Node, director } from 'cc';
 const { ccclass, property } = _decorator;
-
+import { AudioManager } from "../classes/AudioManager";
 /**
  * Predefined variables
  * Name = btn_to_game
@@ -31,6 +31,7 @@ export class btn_to_game extends Component {
     //     // [4]
     // }
     toGame (){
+        AudioManager.playMusic();
         director.loadScene("game")
     }
 }

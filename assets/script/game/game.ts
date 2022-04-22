@@ -104,8 +104,6 @@ export class game extends Component {
     }
 
     onEnable (){
-        AudioManager.playMusic();
-
         this.createWs();
 
         window.setTimeout(()=>{
@@ -122,7 +120,6 @@ export class game extends Component {
     }
 
     onDisable(){
-        AudioManager.pauseMusic();
         this.offTouchEvent();
     }
 
@@ -422,7 +419,6 @@ export class game extends Component {
     }
 
     ready(){
-        // AudioManager.pauseMusic();
         AudioManager.playSound('click');
         this.ws.send(JSON.stringify({
             'type':'ready',
