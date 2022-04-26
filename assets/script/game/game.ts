@@ -3,6 +3,7 @@ import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, 
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import { AudioManager } from "../classes/AudioManager";
+import { AudioPoke } from '../classes/AudioPoke';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
 /**
@@ -275,6 +276,7 @@ export class game extends Component {
                         if(data.data.pokeOut && data.data.pokeOut.length>0){
                             that.createRightHand(that.rightPoke.length);     
                             that.createRightOut(); 
+                            
                         }  
                     } else if(that.seatChupai == that.leftSeat){
                         that.leftPoke = data.data.pokeHand
@@ -284,6 +286,13 @@ export class game extends Component {
                             that.createLeftHand(that.leftPoke.length); 
                             that.createLeftOut();
                         }
+                    }
+
+                    // 播放音效，判断是否是pass
+                    if(data.data.pokeOut){
+                        AudioPoke.playSound(that.checkedPokeOutNow);
+                    }else{
+                        // AudioManager.playSound('A/pass')
                     }
 
                     break;    
