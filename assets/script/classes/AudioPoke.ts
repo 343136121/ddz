@@ -2,7 +2,7 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from './PokeUtil';
-import { AudioManager } from './AudioManager';
+import { EffectManager } from './EffectManager';
 
 /**
  * Predefined variables
@@ -20,26 +20,26 @@ import { AudioManager } from './AudioManager';
 export class AudioPoke {
     // 根据牌型播放对应语音
     static playSound(checkedPokeOut){
-        let sex = "A"
+        let sex = "男"
         let pokeUtil = new PokeUtil();
 
         if(checkedPokeOut.type == pokeUtil.pokeType['Dan']){
             if(checkedPokeOut.value<=10){
-                AudioManager.playSound(`${sex}/单牌${checkedPokeOut.value}`)
+                EffectManager.playSound(`${sex}/单牌${checkedPokeOut.value}`)
             }else if(checkedPokeOut.value == 11){
-                AudioManager.playSound(`${sex}/单牌J`)
+                EffectManager.playSound(`${sex}/单牌J`)
             }else if(checkedPokeOut.value == 12){
-                AudioManager.playSound(`${sex}/单牌Q`)
+                EffectManager.playSound(`${sex}/单牌Q`)
             }else if(checkedPokeOut.value == 13){
-                AudioManager.playSound(`${sex}/单牌K`)
+                EffectManager.playSound(`${sex}/单牌K`)
             }else if(checkedPokeOut.value == 14){
-                AudioManager.playSound(`${sex}/单牌A`)
+                EffectManager.playSound(`${sex}/单牌A`)
             }else if(checkedPokeOut.value == 15){
-                AudioManager.playSound(`${sex}/单牌2`)
+                EffectManager.playSound(`${sex}/单牌2`)
             }else if(checkedPokeOut.value == 16){
-                AudioManager.playSound(`${sex}/单牌副`)
+                EffectManager.playSound(`${sex}/单牌副`)
             }else if(checkedPokeOut.value == 17){
-                AudioManager.playSound(`${sex}/单牌正`)
+                EffectManager.playSound(`${sex}/单牌正`)
             }
         }
 
