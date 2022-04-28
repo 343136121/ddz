@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, find, loader, Prefab, instantiate } from "cc";
+import { _decorator, Component, Node, find, loader, Prefab, instantiate, Label } from "cc";
 const { ccclass, property } = _decorator;
 
 interface PageActive{
@@ -10,7 +10,7 @@ interface PageActive{
 export class UIManager {
     static _dictPanel = new Map <string, Node>();
 
-    public static showDialog(name: string, cb?: Function, ...args: []){
+    public static showDialog(name: string,content?,title?, cb?: Function, ...args: []){
         // const scriptName = name.substr(0,1).toUpperCase() + name.substr(1);
         const scriptName = name;
         if(this._dictPanel.has(name)){
@@ -37,6 +37,14 @@ export class UIManager {
             }
 
             const panel = instantiate(prefab!);
+            if(content){
+                panel.getChildByName('content').getComponent(Label).string = content
+            }
+
+            if(title){
+                panel.getChildByName('title').getComponent(Label).string = title
+            }
+            
             this._dictPanel.set(name, panel);
             const parent = find('Canvas');
             panel.parent = parent;

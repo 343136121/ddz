@@ -119,7 +119,7 @@ export class game extends Component {
                 'type':'sit',
             }));
 
-            UIManager.showDialog('dialogConfirm');
+            UIManager.showDialog('dialogConfirm','这是传入的内容');
             CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
             CustomEventListener.on('dialog_sure', this.dialog_sure, this);
         },1000);
@@ -135,8 +135,15 @@ export class game extends Component {
     }
 
     dialog_sure(){
-        UIManager.hideDialog('dialogConfirm');
         console.log('dialog_sure')
+        UIManager.hideDialog('dialogConfirm',this.dialog_sure2);
+    }
+
+    dialog_sure2(){
+        console.log('dialog_sure2')
+        window.setTimeout(()=>{
+            UIManager.showDialog('dialogConfirm','这是传入的内容2');
+        },1000);
     }
 
     onDisable(){
