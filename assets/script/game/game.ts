@@ -1,9 +1,11 @@
+import { CustomEventListener } from './../classes/CustomEventListener';
 import { EffectManager } from './../classes/EffectManager';
 
 import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label, Button } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import { AudioPoke } from '../classes/AudioPoke';
+import { UIManager } from '../classes/UIManager';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
 /**
@@ -105,6 +107,9 @@ export class game extends Component {
     }
 
     onEnable (){
+
+
+
         this.createWs();
 
         window.setTimeout(()=>{
@@ -113,11 +118,25 @@ export class game extends Component {
                 // 'type':'start',
                 'type':'sit',
             }));
+
+            UIManager.showDialog('dialogConfirm');
+            CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
+            CustomEventListener.on('dialog_sure', this.dialog_sure, this);
         },1000);
 
         this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
 
         this.onTouchEvent();
+    }
+
+    dialog_cancel(){
+        UIManager.hideDialog('dialogConfirm');
+        console.log('dialog_cancel')
+    }
+
+    dialog_sure(){
+        UIManager.hideDialog('dialogConfirm');
+        console.log('dialog_sure')
     }
 
     onDisable(){
@@ -465,7 +484,7 @@ export class game extends Component {
         // 先清除
         this.myOut.removeAllChildren();
 
-        // 出牌
+        // 出牌(是否考虑移到服务器回调中？以防服务器没有响应)
         var length = this.pokePrepare.length;
         // console.log(this.myPoke)
         // console.log(this.myHand.children)
