@@ -118,7 +118,7 @@ export class game extends Component {
                 // 'type':'start',
                 'type':'sit',
             }));
-
+            // 仅适用于不需要回调方法的alert。如果要有回调特殊方法的confirm，需要重新定义一个新的dialog
             UIManager.showDialog('dialogConfirm','这是传入的内容');
             CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
             CustomEventListener.on('dialog_sure', this.dialog_sure, this);
