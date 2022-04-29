@@ -6,11 +6,12 @@ interface PageActive{
     hide: () => {},
 }
 
+// 适用于每个ui dialog都不同的情况。如果需要模拟系统alert 则使用AlertManager
 @ccclass("UIManager")
 export class UIManager {
     static _dictPanel = new Map <string, Node>();
 
-    public static showDialog(name: string,content?,title?, cb?: Function, ...args: []){
+    public static showDialog(name: string, cb?: Function, ...args: []){
         // const scriptName = name.substr(0,1).toUpperCase() + name.substr(1);
         const scriptName = name;
         if(this._dictPanel.has(name)){
@@ -36,24 +37,14 @@ export class UIManager {
                 return;
             }
 
-            const panel = instantiate(prefab!);
-            if(content){
-                panel.getChildByName('content').getComponent(Label).string = content
-            }
-
-            if(title){
-                panel.getChildByName('title').getComponent(Label).string = title
-            }
-            
+            const panel = instantiate(prefab!);      
             this._dictPanel.set(name, panel);
             const parent = find('Canvas');
             panel.parent = parent;
-            console.log(panel,scriptName)
             const comp = panel.getComponent(scriptName);
             if (comp && (comp as Component & PageActive)['show']) {
                 (comp as Component & PageActive)['show'].apply(comp, args);
             }
-            console.log('comp',comp,(comp as Component & PageActive)['show'])
 
             if (cb) {
                 cb();

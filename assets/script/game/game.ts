@@ -1,3 +1,4 @@
+import { find } from 'cc';
 import { CustomEventListener } from './../classes/CustomEventListener';
 import { EffectManager } from './../classes/EffectManager';
 
@@ -8,6 +9,7 @@ import { AudioPoke } from '../classes/AudioPoke';
 import { UIManager } from '../classes/UIManager';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
+import { dialogAlert } from '../ui/dialogAlert';
 /**
  * Predefined variables
  * Name = game
@@ -100,6 +102,8 @@ export class game extends Component {
     public seatNow:number;  //当前该出牌的seat
     public game_id:number;
 
+    @property(Prefab)
+    public alertPrefab: Prefab;
 
     start () {
         // [3]
@@ -118,8 +122,8 @@ export class game extends Component {
                 // 'type':'start',
                 'type':'sit',
             }));
-            // 仅适用于不需要回调方法的alert。如果要有回调特殊方法的confirm，需要重新定义一个新的dialog
-            UIManager.showDialog('dialogConfirm','这是传入的内容');
+            
+            UIManager.showDialog('dialogConfirm');
             CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
             CustomEventListener.on('dialog_sure', this.dialog_sure, this);
         },1000);
@@ -130,6 +134,15 @@ export class game extends Component {
     }
 
     dialog_cancel(){
+        const panel = instantiate(this.alertPrefab!);      
+        const parent = find('Canvas');
+        panel.parent = parent;
+        panel.getChildByName('content').getComponent(Label).string = '文本1';
+
+        const panel2 = instantiate(this.alertPrefab!);      
+        panel2.parent = parent;
+        panel2.getChildByName('content').getComponent(Label).string = '文本2';
+        
         UIManager.hideDialog('dialogConfirm');
         console.log('dialog_cancel')
     }
@@ -142,7 +155,7 @@ export class game extends Component {
     dialog_sure2(){
         console.log('dialog_sure2')
         window.setTimeout(()=>{
-            UIManager.showDialog('dialogConfirm','这是传入的内容2');
+            UIManager.showDialog('dialogConfirm');
         },1000);
     }
 

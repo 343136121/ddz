@@ -264,7 +264,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 244.65330188679243,
+    "_orthoHeight": 205.39386792452828,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -3565,6 +3565,10 @@
     },
     "pokeMask": {
       "__id__": 46
+    },
+    "alertPrefab": {
+      "__uuid__": "bc9c50c5-3a2d-41b5-98e6-bef15a35b552",
+      "__expectedType__": "cc.Prefab"
     },
     "_id": "c6KqFuzxpJdKpuO0Qmf3sU"
   },
