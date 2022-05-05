@@ -3,6 +3,8 @@ import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { Appnative } from '../classes/Appnative';
+import { PopupAlert } from './../ui/PopupAlert';
+import PopupManager from '../ui/PopupManager';
 /**
  * Predefined variables
  * Name = home
@@ -43,6 +45,21 @@ export class home extends Component {
                 }
             } 
         }
+
+        const options = {
+            title:'提示',
+            content:'网络问题'
+        };
+        const params = {
+            mode: PopupManager.CacheMode.Frequent
+        }
+        PopupManager.show(PopupAlert.path, options, params);
+
+        const options2 = {
+            title:'提示2',
+            content:'网络问题2'
+        };
+        PopupManager.show(PopupAlert.path, options2, params);
 
     }
 
