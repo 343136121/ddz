@@ -1,6 +1,6 @@
 
 
-import { _decorator, Component, Node, BlockInputEvents, tween, UITransform } from 'cc';
+import { _decorator, Component, Node, BlockInputEvents, tween, UITransform, UIOpacity, Vec3 } from 'cc';
 import { DEV } from 'cc/env';
 const { ccclass, property } = _decorator;
 /**
@@ -111,17 +111,18 @@ export class PopupBase<Options = any> extends Component {
                 main = this.main;
             this.node.active = true;
             background.active = true;
-            background.opacity = 0;
+            const backgroundOpacity = background.getComponent(UIOpacity)
+            backgroundOpacity.opacity = 0
             main.active = true;
-            // main.scale = 0.5;
-            main.opacity = 0;
+            const mainOpacity = main.getComponent(UIOpacity)
+            mainOpacity.opacity = 0;
             // 背景遮罩
-            tween(background)
-                .to(duration * 0.5, { opacity: 0.7 })
+            tween(backgroundOpacity)
+                .to(duration * 0.5, { opacity: 255 })
                 .start();
             // 弹窗主体
-            tween(main)
-                .to(duration, { opacity: 1 }, { easing: 'backOut' })
+            tween(mainOpacity)
+                .to(duration, { opacity: 255 }, { easing: 'backOut' })
                 .call(res)
                 .start();
         });
@@ -134,13 +135,13 @@ export class PopupBase<Options = any> extends Component {
     protected playHideAnimation(duration: number): Promise<void> {
         return new Promise<void>(res => {
             // 背景遮罩
-            tween(this.background)
+            tween(this.background.getComponent(UIOpacity))
                 .delay(duration * 0.5)
                 .to(duration * 0.5, { opacity: 0 })
                 .start();
             // 弹窗主体
-            tween(this.main)
-                .to(duration, { scale: 0.5, opacity: 0 }, { easing: 'backIn' })
+            tween(this.main.getComponent(UIOpacity))
+                .to(duration, { opacity: 0 }, { easing: 'backIn' })
                 .call(res)
                 .start();
         });

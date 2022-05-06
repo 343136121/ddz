@@ -56,25 +56,27 @@ export class home extends Component {
         }
         PopupManager.show(PopupAlert.path, options, params);
 
-        const options2 = {
-            title:'提示2',
-            content:'网络问题2'
-        };
-        const params2 = {
-            mode: PopupManager.CacheMode.Normal,
-            priority: 0
-        }
-        PopupManager.show(PopupAlert.path, options2, params2);
-
-        // const options3 = {
-        //     title:'提示3',
-        //     content:'网络问题3'
+        // const options2 = {
+        //     title:'提示2',
+        //     content:'网络问题2'
         // };
-        // const params3 = {
-        //     mode: PopupManager.CacheMode.Frequent,
-        //     immediately: true
+        // const params2 = {
+        //     mode: PopupManager.CacheMode.Normal,
+        //     priority: 0
         // }
-        // PopupManager.show(PopupAlert.path, options3, params3);
+        // PopupManager.show(PopupAlert.path, options2, params2);
+
+        const options3 = {
+            title:'提示3',
+            content:'网络问题3'
+        };
+        const params3 = {
+            mode: PopupManager.CacheMode.Frequent,
+            immediately: true
+        }
+        setTimeout(()=>{
+            PopupManager.show(PopupAlert.path, options3, params3);
+        },2000)
 
     }
 

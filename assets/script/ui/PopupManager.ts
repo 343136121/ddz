@@ -318,7 +318,6 @@ export default class PopupManager {
      * 挂起当前展示中的弹窗
      */
     private static async suspend() {
-        console.log('this._current',this._current,this._current.node,this._current.popup)
         if (!this._current) {
             return;
         }
@@ -326,7 +325,6 @@ export default class PopupManager {
         // 将当前弹窗推入挂起队列
         this._suspended.push(request);
         // @ts-ignore
-        console.log('request.popup',request.popup)
         await request.popup.onSuspended();
         // 关闭当前弹窗（挂起）
         await request.popup.hide(true);
