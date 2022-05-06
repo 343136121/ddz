@@ -12,6 +12,7 @@ import { UIManager } from '../classes/UIManager';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
 import PopupManager from '../ui/PopupManager';
+import { EventManager } from '../classes/EventManager';
 /**
  * Predefined variables
  * Name = game
@@ -110,7 +111,15 @@ export class game extends Component {
         
     }
 
+    switch_room(room_id){
+        console.log('room_id',room_id)
+        this.room_id = room_id;
+        this.createWs();
+    }
+
     onEnable (){
+
+        EventManager.on('SWITCH_ROOM', this.switch_room, this);
 
         const options4 = {
             title:'提示4',
@@ -123,22 +132,6 @@ export class game extends Component {
         setTimeout(()=>{
             PopupManager.show(PopupAlert.path, options4, params4);
         },2000)
-
-        this.createWs();
-
-        this.room_id = parseInt(Appnative.getUrlParam('room_id'))
-
-        console.log('this.room_id ',this.room_id )
-
-        window.setTimeout(()=>{
-            // 坐下后，则可收到房间id，开始游戏后收到本局游戏id
-            this.ws.send(JSON.stringify({
-                // 'type':'start',
-                'type':'sit',
-                'room_id':this.room_id
-            }));
-            
-        },1000);
 
         this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
 
@@ -165,7 +158,11 @@ export class game extends Component {
         // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
-            
+            that.ws.send(JSON.stringify({
+                // 'type':'start',
+                'type':'sit',
+                'room_id':that.room_id
+            }));
         };
         this.ws.onmessage = function (event) {
             let json = event.data;
