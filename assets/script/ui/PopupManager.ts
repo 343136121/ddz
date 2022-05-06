@@ -276,7 +276,8 @@ export default class PopupManager {
         let request: PopupRequestType = null;
         if (this._suspended.length > 0) {
             // 挂起队列
-            request = this._suspended.shift();
+            // request = this._suspended.shift();
+            request = this._suspended.pop();
         } else {
             // 等待队列
             request = this._queue.shift();
@@ -324,6 +325,7 @@ export default class PopupManager {
         const request = this._current;
         // 将当前弹窗推入挂起队列
         this._suspended.push(request);
+        console.log('this._suspended',this._suspended)
         // @ts-ignore
         await request.popup.onSuspended();
         // 关闭当前弹窗（挂起）

@@ -112,7 +112,17 @@ export class game extends Component {
 
     onEnable (){
 
-
+        const options4 = {
+            title:'提示4',
+            content:'网络问题4'
+        };
+        const params4 = {
+            mode: PopupManager.CacheMode.Frequent,
+            immediately: true
+        }
+        setTimeout(()=>{
+            PopupManager.show(PopupAlert.path, options4, params4);
+        },2000)
 
         this.createWs();
 

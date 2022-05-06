@@ -37,15 +37,6 @@ export class home extends Component {
 
         this.detectCaseParam();
 
-        // const options = {
-        //     title:'提示',
-        //     content:'网络问题'
-        // };
-        // const params = {
-        //     mode: PopupManager.CacheMode.Normal,
-        //     priority: -1
-        // }
-        // PopupManager.show(PopupAlert.path, options, params);
 
         const options2 = {
             title:'提示2',
@@ -56,6 +47,16 @@ export class home extends Component {
             priority: 0
         }
         PopupManager.show(PopupAlert.path, options2, params2);
+        
+        const options = {
+            title:'提示',
+            content:'网络问题'
+        };
+        const params = {
+            mode: PopupManager.CacheMode.Normal,
+            priority: 1
+        }
+        PopupManager.show(PopupAlert.path, options, params);
 
         const options3 = {
             title:'提示3',
