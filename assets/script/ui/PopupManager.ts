@@ -83,7 +83,7 @@ export default class PopupManager {
      * 用于存放弹窗节点的容器节点（不设置则默认为当前 Canvas）
      */
     public static get container() {
-        let c:Canvas = find('Canvas').getComponent(Canvas).node
+        let c:Canvas = find('Canvas')
         return this._container || c;
     }
     public static set container(value) {
@@ -318,6 +318,7 @@ export default class PopupManager {
      * 挂起当前展示中的弹窗
      */
     private static async suspend() {
+        console.log('this._current',this._current,this._current.node,this._current.popup)
         if (!this._current) {
             return;
         }
@@ -325,6 +326,7 @@ export default class PopupManager {
         // 将当前弹窗推入挂起队列
         this._suspended.push(request);
         // @ts-ignore
+        console.log('request.popup',request.popup)
         await request.popup.onSuspended();
         // 关闭当前弹窗（挂起）
         await request.popup.hide(true);

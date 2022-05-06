@@ -51,7 +51,8 @@ export class home extends Component {
             content:'网络问题'
         };
         const params = {
-            mode: PopupManager.CacheMode.Frequent
+            mode: PopupManager.CacheMode.Normal,
+            priority: -1
         }
         PopupManager.show(PopupAlert.path, options, params);
 
@@ -59,7 +60,21 @@ export class home extends Component {
             title:'提示2',
             content:'网络问题2'
         };
-        PopupManager.show(PopupAlert.path, options2, params);
+        const params2 = {
+            mode: PopupManager.CacheMode.Normal,
+            priority: 0
+        }
+        PopupManager.show(PopupAlert.path, options2, params2);
+
+        // const options3 = {
+        //     title:'提示3',
+        //     content:'网络问题3'
+        // };
+        // const params3 = {
+        //     mode: PopupManager.CacheMode.Frequent,
+        //     immediately: true
+        // }
+        // PopupManager.show(PopupAlert.path, options3, params3);
 
     }
 
