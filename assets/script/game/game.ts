@@ -123,9 +123,9 @@ export class game extends Component {
                 'type':'sit',
             }));
             
-            UIManager.showDialog('dialogConfirm');
-            CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
-            CustomEventListener.on('dialog_sure', this.dialog_sure, this);
+            // UIManager.showDialog('dialogConfirm');
+            // CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
+            // CustomEventListener.on('dialog_sure', this.dialog_sure, this);
         },1000);
 
         this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
