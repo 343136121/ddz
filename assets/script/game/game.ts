@@ -459,6 +459,7 @@ export class game extends Component {
 
     ready(){
         EffectManager.playSound(`click`)
+        console.log("Appnative.getUrlParam('room_id')",Appnative.getUrlParam('room_id'))
         this.ws.send(JSON.stringify({
             'type':'ready',
             'room_id':this.room_id,
