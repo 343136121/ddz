@@ -1,3 +1,5 @@
+import { SceneNavigator } from './../classes/SceneNavigator';
+import { CaseManager } from './../classes/CaseManager';
 
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
@@ -5,6 +7,7 @@ const { ccclass, property } = _decorator;
 import { Appnative } from '../classes/Appnative';
 import { PopupAlert } from './../ui/PopupAlert';
 import PopupManager from '../ui/PopupManager';
+import { PREVIEW } from 'cc/env';
 /**
  * Predefined variables
  * Name = home
@@ -29,22 +32,10 @@ export class home extends Component {
     private isLogin = false;
 
     start () {
-        // [3]
-        if(!this.isLogin){
-            var source = Appnative.checkUserAgent();
-            if (source == 1 || source == 2) {
-                let accessToken = Appnative.getUrlParam('access_token')
-                let timestamp = Appnative.getUrlParam('timestamp')
-                console.log("accessToken",accessToken)
-                if (accessToken !== false) {
-                    // 发送登陆请求，https://third.nj.nbtv.cn/v2/open/user/get
-                    // 如果不通过，则调用 Appnative.dkLogin(); 从头来过
-                } else {
-                    // 新版
-                    Appnative.dkWeboauth()
-                }
-            } 
-        }
+
+        this.checkLogin();
+
+        this.detectCaseParam();
 
         const options = {
             title:'提示',
@@ -80,18 +71,35 @@ export class home extends Component {
 
     }
 
-    // update (deltaTime: number) {
-    //     // [4]
-    // }
+    checkLogin(){
+        if(!this.isLogin){
+            var source = Appnative.checkUserAgent();
+            if (source == 1 || source == 2) {
+                let accessToken = Appnative.getUrlParam('access_token')
+                let timestamp = Appnative.getUrlParam('timestamp')
+                console.log("accessToken",accessToken)
+                if (accessToken !== false) {
+                    // 发送登陆请求，https://third.nj.nbtv.cn/v2/open/user/get
+                    // 如果不通过，则调用 Appnative.dkLogin(); 从头来过
+                } else {
+                    // 新版
+                    Appnative.dkWeboauth()
+                }
+            } 
+        }
+    }
+
+    detectCaseParam(){
+        const caseName = Appnative.getUrlParam('case');
+        if (caseName) {
+            // 跳转到指定示例
+            const ok = CaseManager.goCase(caseName);
+            if (!ok && PREVIEW) {
+                SceneNavigator.go(caseName)
+            }
+        }
+    }
+    
+
 }
 
-/**
- * [1] Class member could be defined like this.
- * [2] Use `property` decorator if your want the member to be serializable.
- * [3] Your initialization goes here.
- * [4] Your update function goes here.
- *
- * Learn more about scripting: https://docs.cocos.com/creator/3.4/manual/zh/scripting/
- * Learn more about CCClass: https://docs.cocos.com/creator/3.4/manual/zh/scripting/ccclass.html
- * Learn more about life-cycle callbacks: https://docs.cocos.com/creator/3.4/manual/zh/scripting/life-cycle-callbacks.html
- */

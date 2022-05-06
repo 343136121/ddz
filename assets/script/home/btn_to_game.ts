@@ -1,3 +1,4 @@
+import { CaseManager } from './../classes/CaseManager';
 
 import { _decorator, Component, Node, director } from 'cc';
 const { ccclass, property } = _decorator;
@@ -32,7 +33,8 @@ export class btn_to_game extends Component {
     // }
     toGame (){
         AudioManager.playMusic();
-        director.loadScene("game")
+        // director.loadScene("game")
+        CaseManager.goCase("game")
     }
 }
 
