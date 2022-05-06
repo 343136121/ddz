@@ -1,3 +1,4 @@
+import { BrowserUtil } from './../classes/BrowserUtil';
 import { SceneNavigator } from './../classes/SceneNavigator';
 import { CaseManager } from './../classes/CaseManager';
 
@@ -7,7 +8,6 @@ const { ccclass, property } = _decorator;
 import { Appnative } from '../classes/Appnative';
 import { PopupAlert } from './../ui/PopupAlert';
 import PopupManager from '../ui/PopupManager';
-import { PREVIEW } from 'cc/env';
 /**
  * Predefined variables
  * Name = home
@@ -66,13 +66,14 @@ export class home extends Component {
             immediately: true
         }
         setTimeout(()=>{
-            PopupManager.show(PopupAlert.path, options3, params3);
+            // PopupManager.show(PopupAlert.path, options3, params3);
         },2000)
 
     }
 
     checkLogin(){
-        if(!this.isLogin){
+        if(!this.isLogin){  
+            // BrowserUtil.clearUrlParam();    // 或者可先存到某个变量中，待登录完成跳转
             var source = Appnative.checkUserAgent();
             if (source == 1 || source == 2) {
                 let accessToken = Appnative.getUrlParam('access_token')
@@ -94,8 +95,8 @@ export class home extends Component {
         if (caseName) {
             // 跳转到指定示例
             const ok = CaseManager.goCase(caseName);
-            if (!ok && PREVIEW) {
-                SceneNavigator.go(caseName)
+            if (!ok) {
+               return false;
             }
         }
     }

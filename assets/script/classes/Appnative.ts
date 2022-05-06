@@ -33,7 +33,7 @@ export class Appnative {
     }
     
     //获取url中的参数
-    static getUrlParam(name) {
+    static getUrlParam(name):any {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
         var r = window.location.search.substr(1).match(reg);
         if(r != null && r[2] != 0)

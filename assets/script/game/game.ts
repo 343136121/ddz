@@ -1,3 +1,4 @@
+import { Appnative } from './../classes/Appnative';
 import { find } from 'cc';
 import { CustomEventListener } from './../classes/CustomEventListener';
 import { EffectManager } from './../classes/EffectManager';
@@ -116,11 +117,16 @@ export class game extends Component {
 
         this.createWs();
 
+        this.room_id = parseInt(Appnative.getUrlParam('room_id'))
+
+        console.log('this.room_id ',this.room_id )
+
         window.setTimeout(()=>{
             // 坐下后，则可收到房间id，开始游戏后收到本局游戏id
             this.ws.send(JSON.stringify({
                 // 'type':'start',
                 'type':'sit',
+                'room_id':this.room_id
             }));
             
             // UIManager.showDialog('dialogConfirm');
