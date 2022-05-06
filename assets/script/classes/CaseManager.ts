@@ -37,25 +37,16 @@ export class CaseManager {
 
     /**
      * 前往对应示例
-     * @param name 示例名称
+     * @param room_id 房间号
      */
-    public static goCase(name: string) {
+    public static goGame(room_id: string) {
         // 展示遮罩
         // CaseLoading.show();
-        // 获取示例信息
-        console.log('name',name)
-        const info = this.getCaseInfo(name);
-        if (!info) {
-            PopupManager.show(PopupAlert.path,{title:'提示',content:'啊哦，没有找到这个示例'});
-            // CaseLoading.hide();
-            return false;
-        }
-        const sceneName = info.scene;
-        SceneNavigator.go(sceneName, null, () => {
+        SceneNavigator.go('game', null, () => {
             // 设置当前 URL 的参数
-            BrowserUtil.setUrlParam(`case=${name}`);
+            BrowserUtil.setUrlParam(`room_id=${room_id}`);
             // 发射事件
-            EventManager.emit('SWITCH_CASE', sceneName);
+            EventManager.emit('SWITCH_ROOM', room_id);
             // 隐藏遮罩
             // CaseLoading.hide();
         });

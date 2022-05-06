@@ -1,3 +1,4 @@
+import { PopupAlert } from './../ui/PopupAlert';
 import { Appnative } from './../classes/Appnative';
 import { find } from 'cc';
 import { CustomEventListener } from './../classes/CustomEventListener';
@@ -10,7 +11,7 @@ import { AudioPoke } from '../classes/AudioPoke';
 import { UIManager } from '../classes/UIManager';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
-import { dialogAlert } from '../ui/dialogAlert';
+import PopupManager from '../ui/PopupManager';
 /**
  * Predefined variables
  * Name = game
@@ -103,8 +104,6 @@ export class game extends Component {
     public seatNow:number;  //当前该出牌的seat
     public game_id:number;
 
-    @property(Prefab)
-    public alertPrefab: Prefab;
 
     start () {
         // [3]
@@ -129,40 +128,11 @@ export class game extends Component {
                 'room_id':this.room_id
             }));
             
-            // UIManager.showDialog('dialogConfirm');
-            // CustomEventListener.on('dialog_cancel', this.dialog_cancel, this);
-            // CustomEventListener.on('dialog_sure', this.dialog_sure, this);
         },1000);
 
         this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
 
         this.onTouchEvent();
-    }
-
-    dialog_cancel(){
-        const panel = instantiate(this.alertPrefab!);      
-        const parent = find('Canvas');
-        panel.parent = parent;
-        panel.getChildByName('content').getComponent(Label).string = '文本1';
-
-        const panel2 = instantiate(this.alertPrefab!);      
-        panel2.parent = parent;
-        panel2.getChildByName('content').getComponent(Label).string = '文本2';
-        
-        UIManager.hideDialog('dialogConfirm');
-        console.log('dialog_cancel')
-    }
-
-    dialog_sure(){
-        console.log('dialog_sure')
-        UIManager.hideDialog('dialogConfirm',this.dialog_sure2);
-    }
-
-    dialog_sure2(){
-        console.log('dialog_sure2')
-        window.setTimeout(()=>{
-            UIManager.showDialog('dialogConfirm');
-        },1000);
     }
 
     onDisable(){
@@ -342,7 +312,15 @@ export class game extends Component {
 
                     break;    
                 case 'win':
-                    alert('游戏结束，获胜者'+data.data.seat['client_id']);
+                    PopupManager.show(PopupAlert.path,
+                        {
+                            title:'提示',content:'游戏结束，获胜者'+data.data.seat['client_id']
+                        },
+                        {
+                            mode: PopupManager.CacheMode.Frequent,
+                            immediately: true
+                        }
+                    )
                     // 额外要加获胜者出牌的逻辑
                     break;
             }
@@ -503,7 +481,14 @@ export class game extends Component {
 
     chupai(){
         if(!this.if_chupai){
-            alert('不能这么出牌')
+            PopupManager.show(PopupAlert.path,
+                {
+                    title:'提示',content:'不能这么出牌'
+                },
+                {
+                    mode: PopupManager.CacheMode.Normal
+                }
+            )
             return false;
         }
 

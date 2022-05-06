@@ -37,25 +37,25 @@ export class home extends Component {
 
         this.detectCaseParam();
 
-        const options = {
-            title:'提示',
-            content:'网络问题'
-        };
-        const params = {
-            mode: PopupManager.CacheMode.Normal,
-            priority: -1
-        }
-        PopupManager.show(PopupAlert.path, options, params);
-
-        // const options2 = {
-        //     title:'提示2',
-        //     content:'网络问题2'
+        // const options = {
+        //     title:'提示',
+        //     content:'网络问题'
         // };
-        // const params2 = {
+        // const params = {
         //     mode: PopupManager.CacheMode.Normal,
-        //     priority: 0
+        //     priority: -1
         // }
-        // PopupManager.show(PopupAlert.path, options2, params2);
+        // PopupManager.show(PopupAlert.path, options, params);
+
+        const options2 = {
+            title:'提示2',
+            content:'网络问题2'
+        };
+        const params2 = {
+            mode: PopupManager.CacheMode.Normal,
+            priority: 0
+        }
+        PopupManager.show(PopupAlert.path, options2, params2);
 
         const options3 = {
             title:'提示3',
@@ -66,7 +66,7 @@ export class home extends Component {
             immediately: true
         }
         setTimeout(()=>{
-            // PopupManager.show(PopupAlert.path, options3, params3);
+            PopupManager.show(PopupAlert.path, options3, params3);
         },2000)
 
     }
@@ -91,10 +91,10 @@ export class home extends Component {
     }
 
     detectCaseParam(){
-        const caseName = Appnative.getUrlParam('case');
-        if (caseName) {
+        const room_id = Appnative.getUrlParam('room_id');
+        if (room_id !== false) {
             // 跳转到指定示例
-            const ok = CaseManager.goCase(caseName);
+            const ok = CaseManager.goGame(room_id);
             if (!ok) {
                return false;
             }

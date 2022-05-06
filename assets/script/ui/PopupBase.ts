@@ -70,7 +70,11 @@ export class PopupBase<Options = any> extends Component {
      */
     public async hide(suspended: boolean = false, duration?: number) {
         const node = this.node;
+        if(!node){
+            return false;
+        }
         // 动画时长不为 0 时拦截点击事件（避免误操作）
+
         if (duration !== 0) {
             let blocker = this.blocker;
             if (!blocker) {
@@ -83,6 +87,7 @@ export class PopupBase<Options = any> extends Component {
 
             blocker.active = true;
         }
+
         // 弹窗回调
         this.onBeforeHide && await this.onBeforeHide(suspended);
         // 播放隐藏动画
