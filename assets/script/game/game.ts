@@ -1,3 +1,4 @@
+import { AudioManager } from './../classes/AudioManager';
 import { PopupAlert } from './../ui/PopupAlert';
 import { Appnative } from './../classes/Appnative';
 import { find } from 'cc';
@@ -113,6 +114,7 @@ export class game extends Component {
 
     switch_room(room_id){
         console.log('room_id',room_id)
+        AudioManager.playMusic();
         this.room_id = room_id;
         this.createWs();
     }

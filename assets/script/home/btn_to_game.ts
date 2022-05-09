@@ -32,7 +32,6 @@ export class btn_to_game extends Component {
     //     // [4]
     // }
     toGame (){
-        AudioManager.playMusic();
         // director.loadScene("game")
         CaseManager.goGame('1')
     }
