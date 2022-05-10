@@ -1,13 +1,13 @@
-import { EventManager } from './EventManager';
+
 import { PopupAlert } from './../ui/PopupAlert';
 import { SceneNavigator } from './SceneNavigator';
 import { BrowserUtil } from './BrowserUtil';
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node,EventTarget } from 'cc';
 import PopupManager from '../ui/PopupManager';
 const { ccclass, property } = _decorator;
 import { CaseInfoMap, CaseInfo } from './CaseList';
-
+const eventTarget = new EventTarget()
 /**
  * Predefined variables
  * Name = CaseManager
@@ -17,7 +17,11 @@ import { CaseInfoMap, CaseInfo } from './CaseList';
  * FileBasenameNoExtension = CaseManager
  * URL = db://assets/script/classes/CaseManager.ts
  * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
- *
+ * 发射和监听普通事件
+ * https://docs.cocos.com/creator/manual/zh/engine/event/event-emit.html
+ * eventTarget.on(type, func, target?);
+ * eventTarget.emit(type, ...args);
+ * 最多只支持传递 5 个事件参数
  */
  
 @ccclass('CaseManager')
@@ -31,7 +35,7 @@ export class CaseManager {
         // 跳转
         SceneNavigator.goHome(null, false, () => {
             // 事件
-            EventManager.emit('SWITCH_CASE', 'home');
+            eventTarget.emit('SWITCH_CASE', 'home');
         });
     }
 
@@ -46,7 +50,7 @@ export class CaseManager {
             // 设置当前 URL 的参数
             BrowserUtil.setUrlParam(`room_id=${room_id}`);
             // 发射事件
-            EventManager.emit('SWITCH_ROOM', room_id);
+            eventTarget.emit('SWITCH_ROOM', room_id);
             // 隐藏遮罩
             // CaseLoading.hide();
         });

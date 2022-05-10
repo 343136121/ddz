@@ -3,6 +3,9 @@ import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
+ * cocos 3.4.x以后具有自带方法，文档如下：
+ * https://docs.cocos.com/creator/manual/zh/engine/event/event-emit.html
+ * 
  * Predefined variables
  * Name = EventManager
  * DateTime = Fri May 06 2022 14:43:22 GMT+0800 (中国标准时间)

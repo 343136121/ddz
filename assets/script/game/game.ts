@@ -5,7 +5,7 @@ import { find } from 'cc';
 import { CustomEventListener } from './../classes/CustomEventListener';
 import { EffectManager } from './../classes/EffectManager';
 
-import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label, Button } from 'cc';
+import { _decorator, Component, Node, Prefab, SpriteAtlas, Sprite, instantiate, Input, Mask, UITransform, Rect, Label, Button,EventTarget } from 'cc';
 const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import { AudioPoke } from '../classes/AudioPoke';
@@ -13,7 +13,7 @@ import { UIManager } from '../classes/UIManager';
 import Xhr from 'xhr';
 import * as _ from 'lodash';
 import PopupManager from '../ui/PopupManager';
-import { EventManager } from '../classes/EventManager';
+const eventTarget = new EventTarget();
 /**
  * Predefined variables
  * Name = game
@@ -120,8 +120,7 @@ export class game extends Component {
     }
 
     onEnable (){
-
-        EventManager.on('SWITCH_ROOM', this.switch_room, this);
+        eventTarget.on('SWITCH_ROOM', this.switch_room, this);
 
         const options4 = {
             title:'提示4',
