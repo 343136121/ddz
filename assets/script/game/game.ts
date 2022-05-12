@@ -13,6 +13,7 @@ import { UIManager } from '../classes/UIManager';
 import * as _ from 'lodash';
 import PopupManager from '../ui/PopupManager';
 const eventTarget = new EventTarget();
+import { EventManager } from '../classes/EventManager';
 /**
  * Predefined variables
  * Name = game
@@ -120,7 +121,7 @@ export class game extends Component {
 
     onEnable (){
         console.log('onEnable')
-        eventTarget.on('SWITCH_ROOM', this.switch_room, this);
+        EventManager.on('SWITCH_ROOM', this.switch_room, this);
 
         // const options4 = {
         //     title:'提示4',
@@ -155,8 +156,8 @@ export class game extends Component {
 
         // this.ws = new WebSocket("ws://127.0.0.1:10282");
 
-        this.ws = new WebSocket("ws://192.168.1.21:10282");
-        // this.ws = new WebSocket("ws://118.178.129.190:10282");
+        // this.ws = new WebSocket("ws://192.168.1.21:10282");
+        this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
             that.ws.send(JSON.stringify({

@@ -8,6 +8,7 @@ import PopupManager from '../ui/PopupManager';
 const { ccclass, property } = _decorator;
 import { CaseInfoMap, CaseInfo } from './CaseList';
 const eventTarget = new EventTarget()
+import { EventManager } from './EventManager';
 /**
  * Predefined variables
  * Name = CaseManager
@@ -35,7 +36,7 @@ export class CaseManager {
         // 跳转
         SceneNavigator.goHome(null, false, () => {
             // 事件
-            eventTarget.emit('SWITCH_CASE', 'home');
+            EventManager.emit('SWITCH_CASE', 'home');
         });
     }
 
@@ -51,7 +52,7 @@ export class CaseManager {
             BrowserUtil.setUrlParam(`room_id=${room_id}`);
             // 发射事件
             console.log('SWITCH_ROOM')
-            eventTarget.emit('SWITCH_ROOM', room_id);
+            EventManager.emit('SWITCH_ROOM', room_id);
             // 隐藏遮罩
             // CaseLoading.hide();
         });

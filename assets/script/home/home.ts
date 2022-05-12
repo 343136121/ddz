@@ -37,6 +37,8 @@ export class home extends Component {
 
         this.checkLogin();
 
+        this.detectCaseParam();
+
         // const options2 = {
         //     title:'提示2',
         //     content:'网络问题2'
