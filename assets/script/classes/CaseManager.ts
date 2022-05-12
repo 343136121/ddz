@@ -50,6 +50,7 @@ export class CaseManager {
             // 设置当前 URL 的参数
             BrowserUtil.setUrlParam(`room_id=${room_id}`);
             // 发射事件
+            console.log('SWITCH_ROOM')
             eventTarget.emit('SWITCH_ROOM', room_id);
             // 隐藏遮罩
             // CaseLoading.hide();

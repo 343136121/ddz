@@ -119,6 +119,7 @@ export class game extends Component {
     }
 
     onEnable (){
+        console.log('onEnable')
         eventTarget.on('SWITCH_ROOM', this.switch_room, this);
 
         // const options4 = {
