@@ -100,7 +100,7 @@ export class Appnative {
      * @param  {[string]} url [登陆后跳转地址]
      * @param  {[string]} type [1:默认;2:兑吧;]
      */
-    static dkLogin(url, type) {
+    static dkLogin(url?, type?) {
         url = arguments[0] == undefined ? '' : url;
         type = arguments[1] == undefined ? '1' : type;
         var userAgent = this.checkUserAgent();

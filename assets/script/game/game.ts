@@ -10,7 +10,6 @@ const { ccclass, property } = _decorator;
 import { PokeUtil } from '../classes/PokeUtil';
 import { AudioPoke } from '../classes/AudioPoke';
 import { UIManager } from '../classes/UIManager';
-import Xhr from 'xhr';
 import * as _ from 'lodash';
 import PopupManager from '../ui/PopupManager';
 const eventTarget = new EventTarget();
@@ -122,17 +121,17 @@ export class game extends Component {
     onEnable (){
         eventTarget.on('SWITCH_ROOM', this.switch_room, this);
 
-        const options4 = {
-            title:'提示4',
-            content:'网络问题4'
-        };
-        const params4 = {
-            mode: PopupManager.CacheMode.Frequent,
-            immediately: true
-        }
-        setTimeout(()=>{
-            PopupManager.show(PopupAlert.path, options4, params4);
-        },2000)
+        // const options4 = {
+        //     title:'提示4',
+        //     content:'网络问题4'
+        // };
+        // const params4 = {
+        //     mode: PopupManager.CacheMode.Frequent,
+        //     immediately: true
+        // }
+        // setTimeout(()=>{
+        //     PopupManager.show(PopupAlert.path, options4, params4);
+        // },2000)
 
         this.btn_ready.on(Input.EventType.TOUCH_START,this.ready,this);// 绑定准备按钮
 

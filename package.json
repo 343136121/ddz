@@ -7,8 +7,7 @@
     "version": "3.4.0"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
-    "xhr": "2.6.0"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.178"
