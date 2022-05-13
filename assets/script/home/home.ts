@@ -120,7 +120,8 @@ export class home extends Component {
     }
 
     detectCaseParam(){
-        if (this.room_id !== false) {
+        console.log(this.room_id)
+        if (!!this.room_id) {
             // 跳转到指定示例
             const ok = CaseManager.goGame(this.room_id);
             if (!ok) {
