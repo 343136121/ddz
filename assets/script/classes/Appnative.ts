@@ -32,15 +32,6 @@ export class Appnative {
         }
     }
     
-    //获取url中的参数
-    static getUrlParam(name):any {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-        var r = window.location.search.substr(1).match(reg);
-        if(r != null && r[2] != 0)
-        return unescape(r[2]);
-        return false;
-    }
-
     /**
      * 新版IOS原生交互
      * @param functionName  方法名

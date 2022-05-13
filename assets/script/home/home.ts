@@ -37,7 +37,7 @@ export class home extends Component {
 
         this.checkLogin();
 
-        this.detectCaseParam();
+        // this.detectCaseParam();
 
         // const options2 = {
         //     title:'提示2',
@@ -74,14 +74,21 @@ export class home extends Component {
     }
 
     checkLogin(){
-        this.room_id = Appnative.getUrlParam('room_id');
+        this.room_id = BrowserUtil.getUrlParam('room_id');
        
         var source = Appnative.checkUserAgent();
         if (source == 1 || source == 2) {
-            let access_token = Appnative.getUrlParam('access_token')
-            let timestamp = Appnative.getUrlParam('timestamp')
-            if (access_token !== false) {
-                console.log('accessToken',access_token)
+            let access_token = BrowserUtil.getUrlParam('access_token')
+            let timestamp = BrowserUtil.getUrlParam('timestamp')
+            alert(access_token)
+            console.log('accessToken',access_token)
+            if (access_token !== null) {
+                if(parseInt(access_token) == 0 ){
+                    let redirectUrl = sys.localStorage.getItem('redirectUrl')
+                    sys.localStorage.removeItem('redirectUrl')
+                    Appnative.dkLogin(redirectUrl)
+                }
+
                 let host = window.location.host
 
                 HttpUtil.get('v2/open/user/get',{
@@ -90,12 +97,14 @@ export class home extends Component {
                     host:host
                 },(succ,data)=>{
                     console.log('succ and data',succ,data)
+                    succ = true;
                     if(succ){
-                        // this.detectCaseParam();
+                        this.detectCaseParam();
                     }else{
                          // 如果不通过，则记录需要跳转的房间，再调用 Appnative.dkLogin();
-                        // sys.localStorage.setItem('room_id',this.room_id.toString())
-                        Appnative.dkLogin()
+                        let redirectUrl = sys.localStorage.getItem('redirectUrl')
+                        sys.localStorage.removeItem('redirectUrl')
+                        Appnative.dkLogin(redirectUrl)
                     }
                 });
 
@@ -103,6 +112,7 @@ export class home extends Component {
             } else {
                 // 新版
                 console.log('Appnative.dkWeboauth')
+                sys.localStorage.setItem('redirectUrl',window.location.href)
                 Appnative.dkWeboauth(window.location.href)
             }
         } 
@@ -110,10 +120,6 @@ export class home extends Component {
     }
 
     detectCaseParam(){
-        if(!this.room_id){
-            this.room_id = parseInt(sys.localStorage.getItem('room_id'))
-        }
-
         if (this.room_id !== false) {
             // 跳转到指定示例
             const ok = CaseManager.goGame(this.room_id);
