@@ -79,7 +79,6 @@ export class home extends Component {
         var source = Appnative.checkUserAgent();
         if (source == 1 || source == 2) {
             let access_token = BrowserUtil.getUrlParam('access_token')
-            let timestamp = BrowserUtil.getUrlParam('timestamp')
             alert(access_token)
             console.log('accessToken',access_token)
             if (access_token !== null) {
@@ -89,11 +88,10 @@ export class home extends Component {
                     Appnative.dkLogin(redirectUrl)
                 }
 
-                let host = window.location.host
+                let host = window.location.hostname
 
-                HttpUtil.get('v2/open/user/get',{
+                HttpUtil.get('ddz/user/login',{
                     access_token:access_token,
-                    timestamp:timestamp,
                     host:host
                 },(succ,data)=>{
                     console.log('succ and data',succ,data)

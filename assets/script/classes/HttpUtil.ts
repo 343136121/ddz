@@ -16,8 +16,7 @@ const { ccclass, property } = _decorator;
 
 @ccclass('HttpUtil')
 export class HttpUtil {
-//   private static baseUrl: string = "https://third.nj.nbtv.cn/v2/open/user/get";
-    private static baseUrl: string = "http://192.168.1.21/dknb/sites/third/web/";
+    private static baseUrl: string = "http://192.168.1.27/dknb/sites/game/web/";
 
     public static get(url, params: object = {}, callback) {
         let dataStr = '';
