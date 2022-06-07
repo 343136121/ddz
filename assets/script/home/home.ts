@@ -94,9 +94,8 @@ export class home extends Component {
                     access_token:access_token,
                     host:host
                 },(succ,data)=>{
-                    console.log('data:',JSON.parse(data))
-                    let dataObj = JSON.parse(data)
-                    if(dataObj.success){
+                    
+                    if(data.success){
                         this.detectCaseParam();
                     }else{
                          // 如果不通过，则记录需要跳转的房间，再调用 Appnative.dkLogin();
