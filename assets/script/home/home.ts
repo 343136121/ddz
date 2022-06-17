@@ -97,10 +97,17 @@ export class home extends Component {
                     
                     if(data.success){
                         this.detectCaseParam();
+                        // 登陆成功就将userinfo和access_token记录在local仓库中，以供长链接使用。长链接也可使用本登陆接口
+                        sys.localStorage.setItem('access_token',access_token)
+                        sys.localStorage.setItem('host',host)
+                        sys.localStorage.setItem('userinfo',JSON.stringify(data.result))
                     }else{
                          // 如果不通过，则记录需要跳转的房间，再调用 Appnative.dkLogin();
                         let redirectUrl = sys.localStorage.getItem('redirectUrl')
                         sys.localStorage.removeItem('redirectUrl')
+                        sys.localStorage.removeItem('access_token')
+                        sys.localStorage.removeItem('host')
+                        sys.localStorage.removeItem('userinfo')
                         Appnative.dkLogin(redirectUrl)
                     }
                 });

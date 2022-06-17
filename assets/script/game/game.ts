@@ -1,7 +1,7 @@
 import { AudioManager } from './../classes/AudioManager';
 import { PopupAlert } from './../ui/PopupAlert';
 import { Appnative } from './../classes/Appnative';
-import { find } from 'cc';
+import { find, sys } from 'cc';
 import { CustomEventListener } from './../classes/CustomEventListener';
 import { EffectManager } from './../classes/EffectManager';
 
@@ -156,10 +156,17 @@ export class game extends Component {
 
         // this.ws = new WebSocket("ws://127.0.0.1:10282");
 
-        // this.ws = new WebSocket("ws://192.168.1.21:10282");
-        this.ws = new WebSocket("ws://118.178.129.190:10282");
+        this.ws = new WebSocket("ws://192.168.1.27:10282");
+        // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
+            // 登陆测试
+            that.ws.send(JSON.stringify({
+                'type':'login',
+                'access_token':sys.localStorage.getItem('access_token'),
+                'host':sys.localStorage.getItem('host')
+            }));
+
             that.ws.send(JSON.stringify({
                 // 'type':'start',
                 'type':'sit',
