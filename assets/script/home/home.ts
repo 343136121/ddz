@@ -11,7 +11,7 @@ import { PopupAlert } from './../ui/PopupAlert';
 import PopupManager from '../ui/PopupManager';
 import { HttpUtil } from '../classes/HttpUtil';
 /**
- * test for new remote
+ * git remote set-url --add origin git@github.com:343136121/ddz.git
  * Predefined variables
  * Name = home
  * DateTime = Fri Apr 22 2022 10:00:26 GMT+0800 (中国标准时间)
