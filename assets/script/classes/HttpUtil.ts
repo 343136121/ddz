@@ -16,7 +16,7 @@ const { ccclass, property } = _decorator;
 
 @ccclass('HttpUtil')
 export class HttpUtil {
-    private static baseUrl: string = "http://192.168.1.27/dknb/sites/game/web/";
+    private static baseUrl: string = "http://192.168.1.29/dknb/sites/game/web/";
 
     public static get(url, params: object = {}, callback) {
         let dataStr = '';

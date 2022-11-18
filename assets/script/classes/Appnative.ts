@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 import {fetch as fetchPolyfill} from 'whatwg-fetch'
 import crypto from "crypto-es";
 import eruda from 'eruda'
-
+eruda.init()
 
 /**
  * Predefined variables
@@ -150,7 +150,7 @@ export class Appnative {
     static thirdLogin(app_key,app_secret,access_token,host) {
         var current = Math.round(Date.now() /1000)
         var nonce = Math.random()*9999
-      eruda.init()
+      
         return new Promise((resolve, reject)=>{
           let formData = new FormData();
           formData.append('access_token',access_token);
@@ -175,6 +175,8 @@ export class Appnative {
             }
             ).then(res=>{
                 resolve(res)
+            },err=>{
+              reject(err)
             })
 
         })

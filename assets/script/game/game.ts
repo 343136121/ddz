@@ -146,6 +146,7 @@ export class game extends Component {
 
     ws: WebSocket;
     createWs(){
+        console.log('createWs',sys.localStorage.getItem('access_token'))
         let that = this;
 
         that.btn_sort.on(Input.EventType.TOUCH_START,that.toggleSortType,that);// 做个按钮切换sortType
@@ -156,7 +157,7 @@ export class game extends Component {
 
         // this.ws = new WebSocket("ws://127.0.0.1:10282");
 
-        this.ws = new WebSocket("ws://192.168.1.27:10282");
+        this.ws = new WebSocket("ws://192.168.1.29:10282");
         // this.ws = new WebSocket("ws://118.178.129.190:10282");
         
         this.ws.onopen = function (event) {
@@ -166,6 +167,7 @@ export class game extends Component {
                 'access_token':sys.localStorage.getItem('access_token'),
                 'host':sys.localStorage.getItem('host')
             }));
+            console.log("sys.localStorage.getItem('access_token')",sys.localStorage.getItem('access_token'))
 
             that.ws.send(JSON.stringify({
                 // 'type':'start',
@@ -342,10 +344,10 @@ export class game extends Component {
             }
         };
         this.ws.onerror = function (event) {
-            
+            console.log(event)
         };
         this.ws.onclose = function (event) {
-            
+            console.log(event)
         };
 
     }

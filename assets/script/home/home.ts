@@ -9,7 +9,6 @@ const { ccclass, property } = _decorator;
 import { Appnative } from '../classes/Appnative';
 import { PopupAlert } from './../ui/PopupAlert';
 import PopupManager from '../ui/PopupManager';
-import {fetch as fetchPolyfill} from 'whatwg-fetch'
 
 /**
  * git remote set-url --add origin git@github.com:343136121/ddz.git
@@ -76,11 +75,13 @@ export class home extends Component {
 
     checkLogin(){
         this.room_id = BrowserUtil.getUrlParam('room_id');
+        sys.localStorage.setItem('room_id',this.room_id)
        
         var source = Appnative.checkUserAgent();
         if (source == 1 || source == 2) {
-            // window.dkAccessTokenCallback = this.dkAccessTokenCallback;
-            // Appnative.dkAccessToken('dkAccessTokenCallback')
+            window.dkAccessTokenCallback = this.dkAccessTokenCallback;
+            window.detectCaseParam = this.detectCaseParam;
+            Appnative.dkAccessToken('dkAccessTokenCallback')
         } 
 
     }
@@ -93,7 +94,6 @@ export class home extends Component {
         let appsecret = 'GOPtocNiBy'
 
        
-        let that = this
         Appnative.thirdLogin(appkey,appsecret,access_token,window.location.hostname).then((res)=>{
             console.log('res',res)
             if(res.success){
@@ -101,7 +101,7 @@ export class home extends Component {
                 sys.localStorage.setItem('access_token',access_token)
                 sys.localStorage.setItem('host',window.location.hostname)
                 sys.localStorage.setItem('userinfo',JSON.stringify(data.result))
-                that.detectCaseParam();
+                window.detectCaseParam()
             }else{
                 sys.localStorage.removeItem('access_token')
                 sys.localStorage.removeItem('host')
@@ -114,8 +114,9 @@ export class home extends Component {
     }
 
     detectCaseParam(){
-        console.log(this.room_id)
-        if (!!this.room_id) {
+        this.room_id = sys.localStorage.getItem('room_id')
+        console.log('detectCaseParam',this.room_id,this.room_id != 'null',!!this.room_id)
+        if (this.room_id != 'null' && !!this.room_id) {
             // 跳转到指定示例
             const ok = CaseManager.goGame(this.room_id);
             if (!ok) {
