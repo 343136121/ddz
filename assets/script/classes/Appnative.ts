@@ -2,6 +2,11 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
+import {fetch as fetchPolyfill} from 'whatwg-fetch'
+import crypto from "crypto-es";
+import eruda from 'eruda'
+
+
 /**
  * Predefined variables
  * Name = Appnative
@@ -68,6 +73,23 @@ export class Appnative {
         return indexOfIOS >= 0
     }
 
+    /**
+     * [dkAccessToken 直接获取AccessToken,并调用回调函数]
+     * @param  {string} callback({accesstoken:"", timestamp:""}) [回调函数名(json字符串)]
+     */
+
+
+    static dkAccessToken(callback) {
+        var userAgent = this.checkUserAgent();
+    
+        if (userAgent == 1) {
+        this.iosNative('dkAccessToken', {
+            callback: callback
+        });
+        } else if (userAgent == 2) {
+        android.dkAccessToken(callback);
+        } else {}
+    }
 
     /**
      * [dkWeboauth 网页授权登陆并跳转]
@@ -124,6 +146,39 @@ export class Appnative {
         android.dkShare(JSON.stringify(info), type);
         }
     }
+
+    static thirdLogin(app_key,app_secret,access_token,host) {
+        var current = Math.round(Date.now() /1000)
+        var nonce = Math.random()*9999
+      eruda.init()
+        return new Promise((resolve, reject)=>{
+          let formData = new FormData();
+          formData.append('access_token',access_token);
+          formData.append('host',host);
+          formData.append('timestamp',current);
+
+          fetch(
+            'https://third.nj.nbtv.cn/v2/open/user/get',
+            {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                headers: {
+                  appkey:app_key,
+                  nonce:nonce,
+                  curtime:current,
+                  checksum:crypto.SHA1(app_secret+nonce+current).toString()
+                },
+                body: formData
+              }
+            )
+            .then(res=> {
+                return res.json()
+            }
+            ).then(res=>{
+                resolve(res)
+            })
+
+        })
+      }
 
 }
 

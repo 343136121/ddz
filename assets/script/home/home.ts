@@ -3,13 +3,14 @@ import { BrowserUtil } from './../classes/BrowserUtil';
 import { SceneNavigator } from './../classes/SceneNavigator';
 import { CaseManager } from './../classes/CaseManager';
 
-import { _decorator, Component, Node, sys } from 'cc';
+import { _decorator, Component, Node, sys} from 'cc';
 const { ccclass, property } = _decorator;
 
 import { Appnative } from '../classes/Appnative';
 import { PopupAlert } from './../ui/PopupAlert';
 import PopupManager from '../ui/PopupManager';
-import { HttpUtil } from '../classes/HttpUtil';
+import {fetch as fetchPolyfill} from 'whatwg-fetch'
+
 /**
  * git remote set-url --add origin git@github.com:343136121/ddz.git
  * Predefined variables
@@ -34,10 +35,9 @@ export class home extends Component {
 
     private room_id:any = 0;
 
-    start () {
-
+    start () {       
         this.checkLogin();
-
+        // console.log(crypto.SHA1("Message").toString());
         // this.detectCaseParam();
 
         // const options2 = {
@@ -79,49 +79,38 @@ export class home extends Component {
        
         var source = Appnative.checkUserAgent();
         if (source == 1 || source == 2) {
-            let access_token = BrowserUtil.getUrlParam('access_token')
-            alert(access_token)
-            console.log('accessToken',access_token)
-            if (access_token !== null) {
-                if(parseInt(access_token) == 0 ){
-                    let redirectUrl = sys.localStorage.getItem('redirectUrl')
-                    sys.localStorage.removeItem('redirectUrl')
-                    Appnative.dkLogin(redirectUrl)
-                }
-
-                let host = window.location.hostname
-
-                HttpUtil.get('ddz/user/login',{
-                    access_token:access_token,
-                    host:host
-                },(succ,data)=>{
-                    
-                    if(data.success){
-                        this.detectCaseParam();
-                        // 登陆成功就将userinfo和access_token记录在local仓库中，以供长链接使用。长链接也可使用本登陆接口
-                        sys.localStorage.setItem('access_token',access_token)
-                        sys.localStorage.setItem('host',host)
-                        sys.localStorage.setItem('userinfo',JSON.stringify(data.result))
-                    }else{
-                         // 如果不通过，则记录需要跳转的房间，再调用 Appnative.dkLogin();
-                        let redirectUrl = sys.localStorage.getItem('redirectUrl')
-                        sys.localStorage.removeItem('redirectUrl')
-                        sys.localStorage.removeItem('access_token')
-                        sys.localStorage.removeItem('host')
-                        sys.localStorage.removeItem('userinfo')
-                        Appnative.dkLogin(redirectUrl)
-                    }
-                });
-
-
-            } else {
-                // 新版
-                console.log('Appnative.dkWeboauth')
-                sys.localStorage.setItem('redirectUrl',window.location.href)
-                Appnative.dkWeboauth(window.location.href)
-            }
+            // window.dkAccessTokenCallback = this.dkAccessTokenCallback;
+            // Appnative.dkAccessToken('dkAccessTokenCallback')
         } 
 
+    }
+
+    dkAccessTokenCallback(data){
+        console.log(data)
+        var a = JSON.parse(data)
+        let access_token = a.accesstoken
+        let appkey = 'go9dnk49bkd9jd9ymel1kg6w0803mgq3'
+        let appsecret = 'GOPtocNiBy'
+
+       
+        let that = this
+        Appnative.thirdLogin(appkey,appsecret,access_token,window.location.hostname).then((res)=>{
+            console.log('res',res)
+            if(res.success){
+                // 登陆成功就将userinfo和access_token记录在local仓库中，以供长链接使用。长链接也可使用本登陆接口
+                sys.localStorage.setItem('access_token',access_token)
+                sys.localStorage.setItem('host',window.location.hostname)
+                sys.localStorage.setItem('userinfo',JSON.stringify(data.result))
+                that.detectCaseParam();
+            }else{
+                sys.localStorage.removeItem('access_token')
+                sys.localStorage.removeItem('host')
+                sys.localStorage.removeItem('userinfo')
+                Appnative.dkLogin(window.location.href)
+            }
+        })
+        
+        
     }
 
     detectCaseParam(){
@@ -137,4 +126,4 @@ export class home extends Component {
     
 
 }
-
+    
